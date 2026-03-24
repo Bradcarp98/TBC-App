@@ -1,0 +1,2946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6B9E7A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TBC">
+<title>TBC — Testis · Breast · Check</title>
+<!-- PWA Manifest (inline) -->
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22TBC%20%E2%80%94%20Testis%20%C2%B7%20Breast%20%C2%B7%20Check%22%2C%22short_name%22%3A%22TBC%22%2C%22description%22%3A%22A%20free%20self-check%20guide%20for%20breast%20and%20testicular%20health.%205%20minutes%20a%20month%20that%20could%20change%20everything.%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23456B52%22%2C%22theme_color%22%3A%22%236B9E7A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520rx%3D'96'%2520fill%3D'%25236B9E7A'%2F%253E%253Ctext%2520x%3D'256'%2520y%3D'340'%2520text-anchor%3D'middle'%2520font-family%3D'Georgia%2Cserif'%2520font-size%3D'240'%2520fill%3D'white'%2520font-weight%3D'bold'%253ETBC%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+<!-- Apple touch icon -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%236B9E7A'/%3E%3Ctext x='90' y='122' text-anchor='middle' font-family='Georgia,serif' font-size='84' fill='white' font-weight='bold'%3ETBC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+  --tbc-sage:        #6B9E7A;
+  --tbc-sage-light:  #A8C5B0;
+  --tbc-sage-dark:   #456B52;
+  --tbc-terracotta:  #C4694A;
+  --tbc-amber:       #C9963A;
+
+  --bg-base:         #F7F2EA;
+  --bg-surface:      #FFFFFF;
+  --bg-raised:       #EDE8DF;
+  --text-primary:    #1E1C1A;
+  --text-secondary:  #5C5751;
+  --text-muted:      #9C948C;
+  --text-inverse:    #F7F2EA;
+  --border-subtle:   #E4DDD3;
+  --border-default:  #C9C0B5;
+  --shadow-sm:       0 1px 3px rgba(30,28,26,.06), 0 1px 2px rgba(30,28,26,.04);
+  --shadow-md:       0 4px 12px rgba(30,28,26,.08), 0 2px 4px rgba(30,28,26,.05);
+  --shadow-lg:       0 8px 24px rgba(30,28,26,.10), 0 4px 8px rgba(30,28,26,.06);
+
+  --font-display:    'Lora', Georgia, serif;
+  --font-body:       'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-full: 999px;
+
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+  --ease-smooth: cubic-bezier(0.4,0,0.2,1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-base:        #1A1916;
+    --bg-surface:     #242220;
+    --bg-raised:      #2E2B28;
+    --text-primary:   #F0EAE0;
+    --text-secondary: #A89F96;
+    --text-muted:     #6B635C;
+    --text-inverse:   #1A1916;
+    --border-subtle:  #2E2B28;
+    --border-default: #3D3A36;
+    --shadow-sm:      0 1px 3px rgba(0,0,0,.20);
+    --shadow-md:      0 4px 12px rgba(0,0,0,.30);
+    --shadow-lg:      0 8px 24px rgba(0,0,0,.40);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-base);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN SYSTEM
+═══════════════════════════════════════════════════════ */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  animation: screenEnter 0.25s var(--ease-smooth) forwards;
+}
+.screen.active { display: flex; }
+
+@keyframes screenEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════════════════ */
+.display {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.display em { font-style: italic; color: var(--tbc-sage-light); }
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+h1 em { font-style: italic; color: var(--tbc-sage-light); }
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h3 {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.body-lg { font-size: 1rem; line-height: 1.65; }
+.body    { font-size: 0.9375rem; line-height: 1.65; color: var(--text-secondary); }
+.caption { font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); letter-spacing: 0.04em; }
+.label   { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.04em; }
+.overline { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border: none; cursor: pointer; font-family: var(--font-body);
+  font-weight: 600; font-size: 0.9375rem;
+  border-radius: var(--radius-full);
+  padding: 14px 24px;
+  transition: transform 0.15s var(--ease-smooth), box-shadow 0.15s var(--ease-smooth), background 0.15s;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--tbc-sage);
+  color: white;
+  box-shadow: 0 2px 12px rgba(107,158,122,.35);
+  width: 100%;
+}
+.btn-primary:hover { background: var(--tbc-sage-dark); }
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-default);
+  width: 100%;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 400;
+  padding: 10px 16px;
+  min-height: 44px;
+}
+
+.btn-concern {
+  background: rgba(196,105,74,.1);
+  color: var(--tbc-terracotta);
+  border: 1.5px solid rgba(196,105,74,.3);
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════════════ */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.card-hero {
+  background: linear-gradient(135deg, var(--tbc-sage-dark) 0%, var(--tbc-sage) 100%);
+  color: white;
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(107,158,122,.30);
+  border: none;
+}
+
+.card-tip {
+  background: rgba(107,158,122,.08);
+  border-left: 3px solid var(--tbc-sage);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 12px 16px;
+}
+
+.card-concern {
+  background: rgba(196,105,74,.07);
+  border: 1.5px solid rgba(196,105,74,.2);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+}
+
+.card-amber {
+  background: rgba(201,150,58,.08);
+  border: 1.5px solid rgba(201,150,58,.2);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   INPUTS
+═══════════════════════════════════════════════════════ */
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+
+input[type="text"], input[type="number"], input[type="date"], textarea, select {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--tbc-sage);
+  box-shadow: 0 0 0 3px rgba(107,158,122,.15);
+}
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+textarea { resize: none; min-height: 90px; }
+
+.helper-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════════════
+   SELECTION OPTIONS
+═══════════════════════════════════════════════════════ */
+.option-list { display: flex; flex-direction: column; gap: 10px; }
+
+.option-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.option-item:active { transform: scale(0.98); }
+.option-item.selected {
+  border-color: var(--tbc-sage);
+  background: rgba(107,158,122,.07);
+}
+.option-item.selected-concern {
+  border-color: var(--tbc-terracotta);
+  background: rgba(196,105,74,.07);
+}
+.option-item.selected-amber {
+  border-color: var(--tbc-amber);
+  background: rgba(201,150,58,.07);
+}
+
+.option-radio {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border-default);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.option-item.selected .option-radio {
+  border-color: var(--tbc-sage); background: var(--tbc-sage);
+}
+.option-item.selected-concern .option-radio {
+  border-color: var(--tbc-terracotta); background: var(--tbc-terracotta);
+}
+.option-item.selected-amber .option-radio {
+  border-color: var(--tbc-amber); background: var(--tbc-amber);
+}
+.option-radio::after {
+  content: ''; width: 7px; height: 7px;
+  border-radius: 50%; background: white; display: none;
+}
+.option-item.selected .option-radio::after,
+.option-item.selected-concern .option-radio::after,
+.option-item.selected-amber .option-radio::after { display: block; }
+
+.option-label { font-size: 0.9375rem; font-weight: 500; }
+.option-sub { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════════════════ */
+.page-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 16px 20px 20px;
+  flex-shrink: 0;
+}
+.page-header.dark {
+  background: var(--tbc-sage-dark);
+  border-bottom: none;
+}
+.page-header.dark h1 { color: white; }
+.page-header.dark h1 em { color: rgba(255,255,255,.65); }
+
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-size: 0.875rem;
+  color: var(--text-muted); padding: 0;
+  margin-bottom: 14px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover { color: var(--text-secondary); }
+.page-header.dark .back-btn { color: rgba(255,255,255,.6); }
+.page-header.dark .back-btn:hover { color: white; }
+
+/* ═══════════════════════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════════════════════ */
+.bottom-nav {
+  display: flex; align-items: stretch;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  background: none; border: none; cursor: pointer;
+  padding: 6px 4px;
+  font-family: var(--font-body); font-size: 0.6875rem; font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
+}
+.nav-tab.active { color: var(--tbc-sage); }
+.nav-tab svg { width: 22px; height: 22px; stroke-width: 1.75; }
+
+.nav-tab.nav-check {
+  position: relative;
+}
+.nav-check-bubble {
+  width: 50px; height: 50px;
+  background: var(--tbc-sage);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(107,158,122,.4);
+  margin-bottom: 2px;
+  transition: transform 0.15s var(--ease-spring), background 0.15s;
+}
+.nav-tab.nav-check:active .nav-check-bubble { transform: scale(0.92); }
+.nav-tab.nav-check svg { stroke: white; width: 22px; height: 22px; }
+.nav-tab.nav-check span { color: var(--tbc-sage); font-size: 0.6875rem; }
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS BAR (steps)
+═══════════════════════════════════════════════════════ */
+.step-progress {
+  display: flex; gap: 4px; margin-top: 14px;
+}
+.step-pip {
+  height: 3px; flex: 1; border-radius: 999px;
+  background: rgba(255,255,255,.25);
+  transition: background 0.35s var(--ease-smooth);
+}
+.step-pip.done { background: rgba(255,255,255,.7); }
+.step-pip.active { background: white; }
+
+/* ═══════════════════════════════════════════════════════
+   ILLUSTRATION AREA
+═══════════════════════════════════════════════════════ */
+.illustration {
+  background: var(--bg-raised);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 190px; padding: 16px;
+  overflow: hidden; position: relative;
+  flex-shrink: 0;
+}
+.illustration svg { max-width: 100%; height: auto; }
+
+/* Check draw — kept for result screen confirm only */
+@keyframes draw-check {
+  from { stroke-dashoffset: 60; }
+  to   { stroke-dashoffset: 0; }
+}
+.draw-check {
+  stroke-dasharray: 60;
+  animation: draw-check 0.8s var(--ease-smooth) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATUS DOTS
+═══════════════════════════════════════════════════════ */
+.status-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.status-dot.clear    { background: var(--tbc-sage); }
+.status-dot.unsure   { background: var(--tbc-amber); }
+.status-dot.concern  { background: var(--tbc-terracotta); }
+
+/* ═══════════════════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════════════════ */
+.badge-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  padding: 4px 0;
+}
+
+.badge-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+
+.badge-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--bg-raised);
+  border: 2px solid var(--tbc-sage-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.875rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+}
+.badge-tile:hover .badge-icon { transform: scale(1.05); box-shadow: var(--shadow-md); }
+.badge-icon.locked { filter: grayscale(1); opacity: .3; border-color: var(--border-subtle); }
+
+.badge-name {
+  font-size: 0.75rem; font-weight: 500; text-align: center;
+  color: var(--text-secondary); line-height: 1.3;
+}
+.badge-icon.locked + .badge-name { color: var(--text-muted); }
+
+@keyframes badgeEarn {
+  0%   { transform: scale(0.6); opacity: 0; }
+  65%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.badge-earn { animation: badgeEarn 0.55s var(--ease-spring) forwards; }
+
+/* ═══════════════════════════════════════════════════════
+   CONFIRM ANIMATIONS
+═══════════════════════════════════════════════════════ */
+@keyframes confirmScale {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.confirm-icon { animation: confirmScale 0.5s var(--ease-spring) forwards; }
+
+/* ═══════════════════════════════════════════════════════
+   MISC UTILITIES
+═══════════════════════════════════════════════════════ */
+.stack { display: flex; flex-direction: column; }
+.stack-sm  { gap: 8px; }
+.stack-md  { gap: 16px; }
+.stack-lg  { gap: 24px; }
+
+.row { display: flex; align-items: center; }
+.row-between { display: flex; align-items: center; justify-content: space-between; }
+
+.divider {
+  height: 1px; background: var(--border-subtle); margin: 4px 0;
+}
+
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 4px 10px; border-radius: var(--radius-full);
+  font-size: 0.75rem; font-weight: 600;
+}
+.pill-sage { background: rgba(107,158,122,.12); color: var(--tbc-sage-dark); }
+.pill-amber { background: rgba(201,150,58,.12); color: #8B6820; }
+.pill-terracotta { background: rgba(196,105,74,.12); color: var(--tbc-terracotta); }
+
+.citation {
+  font-size: 0.7rem; color: var(--text-muted);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px; margin-top: 10px;
+  line-height: 1.6;
+}
+
+.badge-banner {
+  background: linear-gradient(135deg, var(--tbc-sage-dark), var(--tbc-sage));
+  color: white; border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  animation: screenEnter .4s var(--ease-smooth);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+h1[tabindex="-1"]:focus { outline: none; }
+
+/* ═══════════════════════════════════════════════════════
+   TOAST NOTIFICATION
+═══════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1.5px solid var(--tbc-sage);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
+  pointer-events: none;
+  max-width: 380px;
+  text-align: center;
+}
+.toast.toast-error {
+  border-color: var(--tbc-terracotta);
+  color: var(--tbc-terracotta);
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════════════════════════ */
+#screen-splash {
+  background: var(--tbc-sage-dark);
+  align-items: center; justify-content: center;
+  text-align: center; padding: 40px 32px;
+  transition: opacity 0.6s var(--ease-smooth);
+}
+#screen-splash.fade-out { opacity: 0; }
+
+.splash-wordmark {
+  font-family: var(--font-display);
+  font-size: 4rem; font-weight: 400;
+  color: white; letter-spacing: -0.04em;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: splashWordmark 0.8s var(--ease-spring) 0.2s forwards;
+}
+@keyframes splashWordmark {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.splash-tagline {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1.125rem; color: rgba(255,255,255,.8);
+  margin-top: 32px; line-height: 1.5;
+  opacity: 0;
+  animation: splashFadeIn 0.7s var(--ease-smooth) 0.8s forwards;
+}
+@keyframes splashFadeIn {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.onboard-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 36px 24px 24px;
+}
+
+.onboard-step-indicator {
+  display: flex; gap: 5px; margin-bottom: 36px;
+}
+.onboard-pip {
+  height: 3px; flex: 1; border-radius: 999px;
+  background: var(--border-default);
+}
+.onboard-pip.done { background: var(--tbc-sage); }
+
+.onboard-body { flex: 1; }
+.onboard-footer { padding-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ═══════════════════════════════════════════════════════
+   HOME DASHBOARD
+═══════════════════════════════════════════════════════ */
+.home-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 20px 20px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.home-greeting { font-family: var(--font-display); font-size: 1.25rem; font-weight: 400; }
+.home-greeting em { font-style: italic; color: var(--tbc-sage); }
+
+.profile-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg-raised); border: 1.5px solid var(--border-default);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.profile-btn:hover { background: var(--border-subtle); }
+.profile-btn svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 1.75; }
+
+.dashboard-scroll {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Hero check card */
+.hero-card-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; opacity: .75; }
+.hero-card-title { font-family: var(--font-display); font-size: 1.5rem; margin: 6px 0 4px; }
+.hero-card-sub { font-size: 0.875rem; opacity: .8; margin-bottom: 20px; }
+.hero-card .btn-primary {
+  background: white; color: var(--tbc-sage-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.hero-card .btn-primary:hover { background: rgba(255,255,255,.9); }
+
+/* Small cards */
+.small-card-row { display: flex; gap: 12px; }
+.small-card { flex: 1; }
+
+.card-label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+.card-value { font-size: 1.5rem; font-weight: 600; color: var(--tbc-sage); line-height: 1; }
+.card-sub { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 4px; }
+
+.card-action {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-subtle);
+}
+.card-action-link {
+  font-size: 0.875rem; font-weight: 500; color: var(--tbc-sage);
+  cursor: pointer; background: none; border: none;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+.card-action-link:hover { color: var(--tbc-sage-dark); text-decoration: underline; }
+
+/* History item */
+.history-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.history-item:hover { border-color: var(--border-default); }
+.history-item:active { transform: scale(0.98); }
+
+.history-info { flex: 1; min-width: 0; }
+.history-type { font-size: 0.9375rem; font-weight: 500; }
+.history-date { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+.history-notes { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ═══════════════════════════════════════════════════════
+   CHECK FLOW
+═══════════════════════════════════════════════════════ */
+.check-select-grid { display: flex; flex-direction: column; gap: 14px; padding: 20px; }
+
+.check-type-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  display: flex; align-items: center; gap: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+.check-type-card:hover { border-color: var(--tbc-sage); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.check-type-card:active { transform: scale(0.98); }
+
+.check-type-icon {
+  width: 54px; height: 54px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.check-type-icon.sage { background: rgba(107,158,122,.12); }
+.check-type-icon.terra { background: rgba(196,105,74,.12); }
+
+.check-type-info h2 { font-size: 1.1rem; margin-bottom: 4px; }
+.check-type-info p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* Step screen */
+.step-header {
+  background: var(--tbc-sage-dark);
+  padding: 16px 20px 20px;
+  flex-shrink: 0;
+}
+.step-header .back-btn { color: rgba(255,255,255,.6); }
+.step-header-top { display: flex; align-items: center; justify-content: space-between; }
+.step-counter { font-size: 0.8125rem; color: rgba(255,255,255,.65); font-weight: 500; }
+.step-title-text { font-family: var(--font-display); font-size: 1.375rem; color: white; margin-top: 12px; }
+
+/* Step layout: illustration fills top half, text scrolls below */
+.step-content {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+}
+
+.step-illus-panel {
+  background: #F0EBE3;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 260px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+@media (prefers-color-scheme: dark) {
+  .step-illus-panel { background: #252219; }
+}
+
+.step-illus-panel svg {
+  max-width: 100%;
+  max-height: 260px;
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+.step-text-panel {
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.step-instruction { font-size: 0.9375rem; line-height: 1.7; color: var(--text-secondary); }
+
+.step-nav {
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  display: flex; gap: 10px; align-items: center;
+  flex-shrink: 0;
+}
+.step-nav .btn-primary { flex: 1; }
+
+/* Record findings */
+.findings-wrap { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.finding-date {
+  font-size: 0.875rem; color: var(--text-muted);
+  background: var(--bg-raised); border-radius: var(--radius-sm);
+  padding: 8px 12px; display: inline-block;
+}
+
+/* Result */
+.result-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 24px; text-align: center;
+  overflow-y: auto;
+  gap: 20px;
+}
+
+.result-icon-wrap {
+  width: 88px; height: 88px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.75rem;
+}
+.result-icon-wrap.clear { background: rgba(107,158,122,.12); }
+.result-icon-wrap.concern { background: rgba(196,105,74,.1); }
+
+.result-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+
+/* ═══════════════════════════════════════════════════════
+   LEARN / ARTICLES
+═══════════════════════════════════════════════════════ */
+.tab-bar {
+  display: flex;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.tab-btn {
+  flex: 1; padding: 14px 8px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab-btn.active { color: var(--tbc-sage); border-bottom-color: var(--tbc-sage); }
+
+.article-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+
+.article-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.article-card:hover { border-color: var(--tbc-sage-light); }
+.article-card:active { transform: scale(0.98); }
+
+.article-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.article-tag {
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em;
+  padding: 3px 8px; border-radius: var(--radius-full);
+  background: rgba(107,158,122,.1); color: var(--tbc-sage-dark);
+}
+.article-tag.breast { background: rgba(196,105,74,.1); color: var(--tbc-terracotta); }
+.article-readtime { font-size: 0.8rem; color: var(--text-muted); }
+.article-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+.article-preview { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.55; }
+
+.article-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.article-body { font-size: 0.9375rem; line-height: 1.75; color: var(--text-secondary); }
+.article-body strong { color: var(--text-primary); font-weight: 600; }
+.article-body ul { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.article-body li { line-height: 1.6; }
+.myth-item { margin-bottom: 16px; }
+.myth-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.myth-label.myth { color: var(--tbc-terracotta); }
+.myth-label.fact { color: var(--tbc-sage); }
+
+/* ═══════════════════════════════════════════════════════
+   RESOURCES
+═══════════════════════════════════════════════════════ */
+.resource-wrap { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.helpline-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+.helpline-name { font-weight: 600; font-size: 0.9375rem; margin-bottom: 4px; }
+.helpline-number { font-size: 1.125rem; font-weight: 600; color: var(--tbc-sage); margin: 6px 0; }
+.helpline-hours { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 6px; }
+.helpline-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+.helpline-link { font-size: 0.8125rem; color: var(--tbc-sage); margin-top: 6px; display: block; text-decoration: none; }
+
+.step-list { display: flex; flex-direction: column; gap: 14px; }
+.step-list-item { display: flex; gap: 14px; align-items: flex-start; }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--tbc-sage); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8125rem; font-weight: 600; flex-shrink: 0; margin-top: 2px;
+}
+.step-list-text { font-size: 0.9375rem; line-height: 1.6; color: var(--text-secondary); }
+.step-list-text strong { color: var(--text-primary); }
+
+/* ═══════════════════════════════════════════════════════
+   PROFILE / SETTINGS
+═══════════════════════════════════════════════════════ */
+.profile-wrap { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.settings-section { display: flex; flex-direction: column; gap: 2px; }
+.settings-section-label {
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--text-muted);
+  padding: 0 4px; margin-bottom: 6px;
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
+}
+.settings-row:first-of-type { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.settings-row:last-of-type { border-radius: 0 0 var(--radius-md) var(--radius-md); }
+.settings-row:only-of-type { border-radius: var(--radius-md); }
+.settings-row:not(:last-of-type) { border-bottom: none; }
+.settings-row:hover { background: var(--bg-raised); }
+
+.settings-row-label { font-size: 0.9375rem; font-weight: 500; }
+.settings-row-value { font-size: 0.875rem; color: var(--text-muted); }
+.settings-row-danger .settings-row-label { color: var(--tbc-terracotta); }
+.settings-row svg { width: 18px; height: 18px; stroke: var(--text-muted); stroke-width: 1.75; }
+
+/* Cycle settings */
+.cycle-preview {
+  background: rgba(107,158,122,.08);
+  border: 1.5px solid var(--tbc-sage-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  animation: screenEnter .3s var(--ease-smooth);
+}
+.cycle-preview-date { font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; color: var(--tbc-sage-dark); }
+.cycle-preview-note { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════════════
+   MODAL / OVERLAY
+═══════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(30,28,26,.5);
+  display: flex; align-items: flex-end;
+  animation: fadeIn .2s var(--ease-smooth);
+}
+.modal-sheet {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+  width: 100%; max-width: 480px; margin: 0 auto;
+  animation: sheetUp .25s var(--ease-smooth);
+  max-height: 85vh; overflow-y: auto;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 40px; height: 4px; border-radius: 999px;
+  background: var(--border-default); margin: 0 auto 20px;
+}
+</style>
+<!-- ═══════════════════════════════════════════════════════
+   FIX 4: Open Graph tags for LinkedIn preview
+═══════════════════════════════════════════════════════ -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="TBC — Testis · Breast · Check">
+<meta property="og:description" content="A free self-check guide for breast and testicular health. 5 minutes a month that could change everything.">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='%23456B52'%3E%3Crect width='1200' height='630' fill='%23456B52'/%3E%3Ctext x='600' y='260' text-anchor='middle' font-family='Georgia,serif' font-size='120' fill='white'%3ETBC%3C/text%3E%3Ctext x='600' y='340' text-anchor='middle' font-family='sans-serif' font-size='28' fill='rgba(255,255,255,.6)' letter-spacing='4'%3ETESTIS · BREAST · CHECK%3C/text%3E%3Ctext x='600' y='420' text-anchor='middle' font-family='Georgia,serif' font-size='26' fill='rgba(255,255,255,.8)' font-style='italic'%3ESome things shouldn't stay TBC.%3C/text%3E%3C/svg%3E">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TBC — Testis · Breast · Check">
+<meta name="twitter:description" content="A free self-check guide for breast and testicular health. 5 minutes a month that could change everything.">
+<meta name="description" content="A free self-check guide for breast and testicular health. 5 minutes a month that could change everything.">
+<!-- FIX 5: Inline SVG favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236B9E7A'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='18' fill='white' font-weight='bold'%3ET%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════ SPLASH ═══════════ -->
+  <div id="screen-splash" class="screen active">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div class="splash-wordmark">TBC</div>
+      <div class="splash-tagline"><em>Some things shouldn't stay TBC.</em></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ONBOARDING ═══════════ -->
+  <div id="screen-onboard" class="screen">
+    <div class="screen-scroll">
+      <div class="onboard-wrap">
+        <div class="onboard-step-indicator" id="onboard-pips"></div>
+        <div class="onboard-body" id="onboard-body"></div>
+        <div class="onboard-footer" id="onboard-footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ HOME ═══════════ -->
+  <div id="screen-home" class="screen">
+    <div class="home-header">
+      <div class="home-greeting" id="home-greeting"></div>
+      <button class="profile-btn" onclick="showScreen('profile')" aria-label="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+    <div class="dashboard-scroll" id="dashboard-scroll"></div>
+    <nav class="bottom-nav" id="main-nav">
+      <button class="nav-tab" data-nav="home" onclick="showScreen('home')" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-tab" data-nav="history" onclick="showScreen('history')" aria-label="History">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>History</span>
+      </button>
+      <button class="nav-tab nav-check" onclick="startCheckFlow()" aria-label="Start Check">
+        <div class="nav-check-bubble">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" opacity=".3"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <span>Check</span>
+      </button>
+      <button class="nav-tab" data-nav="learn" onclick="showScreen('learn')" aria-label="Learn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        <span>Learn</span>
+      </button>
+      <button class="nav-tab" data-nav="profile" onclick="showScreen('profile')" aria-label="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ═══════════ CHECK SELECT ═══════════ -->
+  <div id="screen-check-select" class="screen">
+    <div class="page-header dark">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Which <em>check?</em></h1>
+    </div>
+    <div class="check-select-grid">
+      <div class="card-amber" style="margin-bottom:4px;">
+        <div style="font-size:.8rem;color:#7A5E1A;line-height:1.5;"><strong>Not a medical diagnosis.</strong> This app guides self-checks for awareness only. Always consult a doctor if you notice changes.</div>
+      </div>
+      <div class="check-type-card" onclick="startCheck('testis')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')startCheck('testis')" aria-label="Start testicular check">
+        <div class="check-type-icon" style="width:64px;height:64px;border-radius:50%;overflow:hidden;padding:0;background:none;border:none;">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Warm amber circle background -->
+            <circle cx="32" cy="32" r="32" fill="#E8A834"/>
+            <!-- Shower head -->
+            <ellipse cx="18" cy="12" rx="8" ry="4" fill="#B0B8C0" stroke="#7A828A" stroke-width="1"/>
+            <rect x="8" y="11" width="6" height="3" rx="1.5" fill="#9CA4AC"/>
+            <line x1="8" y1="12.5" x2="4" y2="8" stroke="#9CA4AC" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Water drops -->
+            <g fill="rgba(255,255,255,.7)">
+              <ellipse cx="14" cy="20" rx="1" ry="2.5"/><ellipse cx="18" cy="22" rx="1" ry="2.5"/>
+              <ellipse cx="22" cy="20" rx="1" ry="2.5"/><ellipse cx="16" cy="26" rx="1" ry="2"/>
+              <ellipse cx="20" cy="28" rx="1" ry="2"/><ellipse cx="24" cy="25" rx="1" ry="2"/>
+            </g>
+            <!-- Pear body - single continuous shape with cleft at bottom -->
+            <path d="M36 20 Q33 26 30 30 Q26 35 24 42 Q23 48 25 52 Q27 55 30 56 Q33 57 35 54 Q36 52 37 54 Q39 57 42 56 Q45 55 47 52 Q49 48 48 42 Q46 35 42 30 Q39 26 36 20Z" fill="#C5A54A" stroke="#8B7A30" stroke-width="1.2"/>
+            <!-- Cleft shadow line -->
+            <path d="M36 42 Q36 48 36 54" stroke="#A08830" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".5"/>
+            <!-- Left side highlight -->
+            <path d="M29 34 Q27 42 28 50" stroke="rgba(255,255,255,.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Right side highlight -->
+            <path d="M43 34 Q44 42 43 50" stroke="rgba(255,255,255,.2)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <!-- Stem -->
+            <path d="M36 20 Q37 15 36 11" stroke="#6B5030" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Tiny leaf -->
+            <path d="M36 13 Q39 10 41 12 Q39 14 36 13Z" fill="#7A8E40" stroke="#5A6E28" stroke-width=".5"/>
+          </svg>
+        </div>
+        <div class="check-type-info">
+          <h2>Testicular Check</h2>
+          <p>Monthly self-exam to detect lumps or changes. Takes about 5 minutes.</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+      </div>
+      <div class="check-type-card" onclick="startCheck('breast')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')startCheck('breast')" aria-label="Start breast check">
+        <div class="check-type-icon" style="width:64px;height:64px;border-radius:50%;overflow:hidden;padding:0;background:none;border:none;">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Soft pink circle background -->
+            <circle cx="32" cy="32" r="32" fill="#F2DDD4"/>
+            <!-- Left grapefruit half - moved left, no overlap -->
+            <circle cx="19" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="19" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="19" y1="24.5" x2="19" y2="43.5"/><line x1="11" y1="29" x2="27" y2="39"/>
+              <line x1="11" y1="39" x2="27" y2="29"/><line x1="9.5" y1="34" x2="28.5" y2="34"/>
+            </g>
+            <circle cx="19" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+            <!-- Right grapefruit half - moved right, no overlap -->
+            <circle cx="45" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="45" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="45" y1="24.5" x2="45" y2="43.5"/><line x1="37" y1="29" x2="53" y2="39"/>
+              <line x1="37" y1="39" x2="53" y2="29"/><line x1="35.5" y1="34" x2="54.5" y2="34"/>
+            </g>
+            <circle cx="45" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+          </svg>
+        </div>
+        <div class="check-type-info">
+          <h2>Breast Check</h2>
+          <p>Regular self-exam to identify lumps, skin changes, or other abnormalities. Takes 5–10 minutes.</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CHECK STEPS ═══════════ -->
+  <div id="screen-check-steps" class="screen">
+    <div class="step-header" id="step-header">
+      <button class="back-btn" onclick="stepBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <div class="step-header-top">
+        <div class="step-counter" id="step-counter"></div>
+      </div>
+      <div class="step-title-text" id="step-title"></div>
+      <div class="step-progress" id="step-progress"></div>
+    </div>
+    <div class="step-content" id="step-content"></div>
+    <div class="step-nav">
+      <button class="btn btn-ghost" id="step-prev-btn" onclick="prevStep()">← Prev</button>
+      <button class="btn btn-primary" id="step-next-btn" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ RECORD FINDINGS ═══════════ -->
+  <div id="screen-record" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('check-steps')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Record <em>findings</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div class="findings-wrap">
+        <div class="card">
+          <div class="card-label">Date of check</div>
+          <div class="finding-date" id="finding-date"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:12px;">What did you find?</h3>
+          <div class="option-list" id="finding-options" role="radiogroup" aria-label="What did you find?">
+            <div class="option-item" onclick="selectFinding(this,'clear')" role="radio" aria-checked="false" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectFinding(this,'clear')}">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">✅ All clear</div>
+                <div class="option-sub">Everything felt and looked normal</div>
+              </div>
+            </div>
+            <div class="option-item" onclick="selectFinding(this,'unsure')" role="radio" aria-checked="false" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectFinding(this,'unsure')}">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">🤔 Something felt different</div>
+                <div class="option-sub">Not sure if it's a change</div>
+              </div>
+            </div>
+            <div class="option-item" onclick="selectFinding(this,'concern')" role="radio" aria-checked="false" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectFinding(this,'concern')}">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">⚠️ Found a lump or change</div>
+                <div class="option-sub">Something that needs checking</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px;">Notes <span style="font-weight:400;color:var(--text-muted);">(optional)</span></h3>
+          <textarea id="finding-notes" placeholder="Describe anything you noticed — where, what it felt like, whether it was painful..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveRecord()">Save record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ RESULT ═══════════ -->
+  <div id="screen-result" class="screen">
+    <div class="result-wrap" id="result-wrap"></div>
+  </div>
+
+  <!-- ═══════════ HISTORY ═══════════ -->
+  <div id="screen-history" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Your <em>history</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px;" id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LEARN HUB ═══════════ -->
+  <div id="screen-learn" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Know the <em>signs</em></h1>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="setLearnTab('testis',this)">Testicular</button>
+      <button class="tab-btn" onclick="setLearnTab('breast',this)">Breast</button>
+    </div>
+    <div class="screen-scroll">
+      <div class="article-list" id="article-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ARTICLE ═══════════ -->
+  <div id="screen-article" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('learn')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1 id="article-title"></h1>
+    </div>
+    <div class="screen-scroll">
+      <div class="article-content" id="article-content"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ RESOURCES ═══════════ -->
+  <div id="screen-resources" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Get <em>help</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div class="resource-wrap">
+        <p class="body" style="color:var(--text-secondary)">Found something? Worried about a change? Here's what to do next.</p>
+        <div class="card">
+          <h2 style="margin-bottom:16px;font-size:1.1rem;">Your next steps</h2>
+          <div class="step-list">
+            <div class="step-list-item"><div class="step-num">1</div><div class="step-list-text"><strong>Don't panic.</strong> Most lumps and changes are not cancer. But they do need to be checked.</div></div>
+            <div class="step-list-item"><div class="step-num">2</div><div class="step-list-text"><strong>Call your GP today.</strong> Just say: <em>"I noticed a change during a self-check and I'd like to have it looked at."</em></div></div>
+            <div class="step-list-item"><div class="step-num">3</div><div class="step-list-text"><strong>Write down what you noticed.</strong> When it first appeared, where it is, and what it feels like.</div></div>
+            <div class="step-list-item"><div class="step-num">4</div><div class="step-list-text"><strong>Go to the appointment.</strong> Early assessment gives you the best possible outcome.</div></div>
+          </div>
+        </div>
+        <div class="overline" style="padding:4px 0 2px;">Australian Helplines</div>
+        <div class="helpline-card">
+          <div class="helpline-name">Cancer Council</div>
+          <div class="helpline-number">📞 13 11 20</div>
+          <div class="helpline-hours">Mon–Fri, 9am–5pm your local time</div>
+          <div class="helpline-desc">Speak with a trained cancer nurse — information, support, or understanding a diagnosis.</div>
+          <a class="helpline-link" href="https://cancer.org.au" target="_blank">cancer.org.au →</a>
+        </div>
+        <div class="helpline-card">
+          <div class="helpline-name">healthdirect</div>
+          <div class="helpline-number">📞 1800 022 222</div>
+          <div class="helpline-hours">Available 24/7</div>
+          <div class="helpline-desc">Speak with a registered nurse for health advice, any time of day or night.</div>
+          <a class="helpline-link" href="https://healthdirect.gov.au" target="_blank">healthdirect.gov.au →</a>
+        </div>
+        <div class="helpline-card">
+          <div class="helpline-name">Breast Cancer Network Australia</div>
+          <div class="helpline-number">📞 1800 500 258</div>
+          <div class="helpline-hours">Mon–Fri, 9am–5pm AEST</div>
+          <div class="helpline-desc">Support and information for anyone affected by breast cancer.</div>
+          <a class="helpline-link" href="https://bcna.org.au" target="_blank">bcna.org.au →</a>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:12px;">Online resources</h3>
+          <div class="stack stack-sm">
+            <a href="https://cancer.org.au" target="_blank" class="helpline-link" style="margin:0;">Cancer Council Australia →</a>
+            <a href="https://canceraustralia.gov.au" target="_blank" class="helpline-link" style="margin:0;">Cancer Australia →</a>
+            <a href="https://www.breastscreen.org.au" target="_blank" class="helpline-link" style="margin:0;">BreastScreen Australia (free mammograms, 40–74) →</a>
+            <a href="https://healthdirect.gov.au/australian-health-services" target="_blank" class="helpline-link" style="margin:0;">Find a GP near you →</a>
+            <a href="https://beyondblue.org.au" target="_blank" class="helpline-link" style="margin:0;">Beyond Blue (emotional support) →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PROFILE ═══════════ -->
+  <div id="screen-profile" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Your <em>profile</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div class="profile-wrap" id="profile-wrap"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ BADGES ═══════════ -->
+  <div id="screen-badges" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('profile')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Your <em>badges</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div style="padding:20px;">
+        <p class="body" style="margin-bottom:20px;">Every badge rewards showing up — not what you find.</p>
+        <div class="badge-grid" id="badge-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CYCLE SETTINGS ═══════════ -->
+  <div id="screen-cycle" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('profile')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>Cycle <em>settings</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <div class="card-tip" style="border-radius:var(--radius-md);">
+          <div style="font-size:.8rem;font-weight:600;color:var(--tbc-sage-dark);margin-bottom:4px;">🩺 Why timing matters</div>
+          <div style="font-size:.875rem;color:var(--text-secondary);line-height:1.6;">Breasts are often less tender and easier to examine a few days after your period ends. We time your reminder to this window automatically.</div>
+        </div>
+        <div class="input-group">
+          <label class="label">When did your last period start?</label>
+          <input type="date" id="cycle-start" oninput="updateCyclePreview()">
+          <div class="helper-text">This helps us calculate your next reminder date.</div>
+        </div>
+        <div class="input-group">
+          <label class="label">Average cycle length (days)</label>
+          <input type="number" id="cycle-length" placeholder="28" min="15" max="50" oninput="updateCyclePreview()">
+          <div class="helper-text">Count from the first day of one period to the first day of the next.</div>
+        </div>
+        <div class="input-group">
+          <label class="label">How long does your period usually last? (days)</label>
+          <input type="number" id="cycle-duration" placeholder="5" min="1" max="14" oninput="updateCyclePreview()">
+        </div>
+        <div id="cycle-preview" style="display:none;" class="cycle-preview"></div>
+        <div id="cycle-warning" style="display:none;" class="card-amber">
+          <div style="font-size:.875rem;color:#7A5E1A;line-height:1.6;">That's a little outside the typical range. Double-check your entry — or speak to your GP if you're unsure. You can save and adjust any time.</div>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-md);padding:12px 14px;font-size:.8rem;color:var(--text-muted);line-height:1.5;">
+          🔒 Your cycle data is stored only on this device. It is never shared or uploaded anywhere.
+        </div>
+        <button class="btn btn-primary" onclick="saveCycleSettings()">Save settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ABOUT ═══════════ -->
+  <div id="screen-about" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('profile')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <h1>About <em>TBC</em></h1>
+    </div>
+    <div class="screen-scroll">
+      <div style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <h2 style="margin-bottom:10px;font-size:1.1rem;">What is TBC?</h2>
+          <p class="body">TBC was created to make self-checks less daunting and more routine — for anyone, anywhere. A simple habit that could genuinely save lives.</p>
+        </div>
+        <div class="card-concern">
+          <div style="font-weight:600;margin-bottom:8px;font-size:.9375rem;">⚠️ Medical Disclaimer</div>
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">TBC is a self-awareness tool, not a medical service. Content is based on guidance from Cancer Council Australia and other credible Australian health sources. Self-checks are not a substitute for professional medical advice. If you notice any changes, see your GP promptly. A clear self-check result does not mean cancer is absent.</p>
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;margin-top:10px;">For urgent concerns: call healthdirect 1800 022 222 (24/7), or in an emergency call 000.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px;">Sources</h3>
+          <div class="stack stack-sm" style="font-size:.875rem;color:var(--text-secondary);">
+            <div>• Cancer Council Australia — cancer.org.au</div>
+            <div>• Cancer Australia — canceraustralia.gov.au</div>
+            <div>• healthdirect — healthdirect.gov.au</div>
+            <div>• Breast Cancer Network Australia — bcna.org.au</div>
+            <div>• Better Health Channel (Cancer Council Victoria)</div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:.875rem;color:var(--text-muted);line-height:1.6;">
+            <div>TBC is not affiliated with Cancer Council Australia or any health organisation.</div>
+            <div style="margin-top:8px;">All data is stored only on your device. Nothing is shared.</div>
+            <div style="margin-top:8px;">Version 1.0 · Made with care.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- Badge detail modal -->
+<div id="badge-modal" style="display:none;" class="modal-overlay" onclick="closeBadgeModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="badge-modal-content" style="text-align:center;"></div>
+  </div>
+</div>
+
+<!-- Edit modal (replaces browser prompt/alert/confirm) -->
+<div id="edit-modal" style="display:none;" class="modal-overlay" onclick="closeEditModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="edit-modal-content"></div>
+  </div>
+</div>
+
+<!-- Confirm modal (replaces browser confirm) -->
+<div id="confirm-modal" style="display:none;" class="modal-overlay" onclick="closeConfirmModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="confirm-modal-content"></div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════
+
+const STEPS = {
+  testis: [
+    { title: 'Start in the shower.', illus: 'shower', instruction: 'The best time to do a testicular self-check is during or just after a warm shower or bath. The heat gently relaxes the skin of the scrotum, which makes it much easier to feel for any changes.', tip: 'Aim to do this once a month. Pick a date that\'s easy to remember — the first of the month works well.', cite: '¹Cancer Council Australia · ²Better Health Channel' },
+    { title: 'Take a look in the mirror.', illus: 'mirror', instruction: 'Stand in front of a mirror if you can. Look for any swelling on the skin of the scrotum. It\'s completely normal for one testicle to hang a little lower than the other, or to be slightly larger. What you\'re looking for is anything that\'s changed from your own normal.', tip: 'You\'re not comparing yourself to anyone else — you\'re getting to know your own body.', cite: '¹Cancer Council Australia' },
+    { title: 'Examine each testicle gently.', illus: 'feel', instruction: 'Using both hands, gently cup the scrotum. Place your thumbs on top and your index and middle fingers underneath. Slowly roll each testicle between your thumb and fingers, feeling across the entire surface. Use gentle but firm pressure — you\'re not squeezing, just feeling. Examine one testicle at a time.', tip: 'Take your time. A proper check takes about a minute per side.', cite: '²Better Health Channel · ³Cancer Council NSW' },
+    { title: 'Know what\'s meant to be there.', illus: 'epididymis', instruction: 'At the back of each testicle, you\'ll feel a soft, rope-like structure. This is the epididymis — a tube that stores and carries sperm. It\'s completely normal and is not a lump. Becoming familiar with how it feels will help you tell the difference between normal anatomy and something new.', tip: 'Don\'t be alarmed when you first feel it. The epididymis is often mistaken for something unusual — it\'s not.', cite: '²Better Health Channel' },
+    { title: 'What would a change feel like?', illus: 'magnify', instruction: 'See your GP if you notice: a hard lump on the front or side of a testicle, swelling or a change in the size of a testicle, a change in how a testicle feels (harder, softer, or heavier than usual), a dull ache in the lower abdomen, back, or groin, or a feeling of heaviness in the scrotum.\n\nMost lumps are not cancer — other conditions such as cysts, varicoceles, or epididymitis are far more common. But any new or unusual change should be checked by a doctor promptly.', tip: 'Testicular cancer is one of the most treatable cancers when caught early. Don\'t delay a GP visit if something feels different.', cite: '¹Cancer Council Australia · ³Cancer Council NSW' },
+    { title: 'That\'s your check done.', illus: 'done', instruction: 'Well done for taking the time. Now record what you found — whether everything felt normal or something caught your attention. Being honest with yourself here is the whole point.', tip: 'If you found something that concerns you, don\'t panic — but do book a GP appointment today. Most findings are benign, and your doctor has seen this before.', cite: '' },
+  ],
+  breast: [
+    { title: 'Choose the right time.', illus: 'calendar', instruction: 'If you menstruate, the best time to check is a few days after your period ends, when your breasts are least likely to be swollen or tender. If you don\'t menstruate, pick the same date each month — the first of the month is easy to remember.\n\nBreast checks are for everyone — including men, who can also develop breast cancer, though it\'s rare.', tip: 'Regular checks help you know what\'s normal for you, which makes it easier to spot any genuine change.', cite: '⁵Cancer Council Australia · ⁷BCNA' },
+    { title: 'Look in the mirror — arms at sides.', illus: 'arms-side', instruction: 'Remove your top and stand in front of a mirror with your arms relaxed at your sides. Look at the shape and appearance of both breasts and nipples. You\'re checking for anything that looks different from your usual: a change in shape or size, any skin dimpling, puckering or redness, or a nipple that has started to turn inward.', tip: 'Breasts are rarely perfectly symmetrical — that\'s normal. What you\'re looking for is a new or recent change.', cite: '⁶Cancer Australia · ⁷BCNA' },
+    { title: 'Now raise your arms.', illus: 'arms-up', instruction: 'Raise both arms above your head and look again. This position changes how the breast tissue sits and can reveal changes not visible before — particularly skin dimpling, puckering, or a contour change on one side. Look at both breasts carefully.', tip: 'This step only takes a moment but can reveal things the first position misses.', cite: '⁷BCNA · ⁸healthdirect' },
+    { title: 'Lie down and feel each breast.', illus: 'lying', instruction: 'Lie on your back with a pillow under your right shoulder. Place your right arm behind your head. Using the flat pads of your three middle fingers on your left hand, feel your right breast. Work in small overlapping circular movements — about the size of a 20-cent coin. Use three levels of pressure: light, medium, and firm. Cover the full breast area. Then repeat on the other side.', tip: 'The lying-down position spreads breast tissue more evenly, making it easier to feel all the way through.', cite: '⁷BCNA · ⁸healthdirect' },
+    { title: 'Don\'t miss the edges.', illus: 'trace', instruction: 'Make sure you cover the entire area — from your collarbone down to the bottom of your breast, and from your breastbone across to your armpit. Don\'t forget the armpit itself: lymph nodes sit here and can sometimes be felt if enlarged. Work in a systematic pattern so you don\'t miss any area.', tip: 'Many people focus only on the centre of the breast. Checking right out to the armpit and collarbone is just as important.', cite: '⁶Cancer Australia · ⁷BCNA' },
+    { title: 'Check your nipples.', illus: 'nipple', instruction: 'Gently squeeze each nipple and check for any discharge. A small amount of discharge can be normal — but any discharge that appears without squeezing, is blood-stained, or comes from only one breast should be checked by a doctor. Also note any change in nipple direction or appearance.', tip: 'A nipple that has recently turned inward, become crusty, or changed in any way is worth mentioning to your GP.', cite: '⁵Cancer Council Australia · ⁸healthdirect' },
+    { title: 'Check complete.', illus: 'done', instruction: 'You\'ve done something important today. Now record what you found — honestly and without judgement. If everything felt and looked the same as always, that\'s great news. If anything seemed different, make a note and book a GP appointment as soon as you can.', tip: 'Self-checks work best alongside regular mammograms, not instead of them. If you\'re 40 or over, speak to your GP about your screening options.', cite: '⁵Cancer Council Australia' },
+  ]
+};
+
+// FIX: Placeholder illustrations — to be replaced with real images/videos later
+const PLACEHOLDER_ILLUS = `<svg viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="260" fill="#EAF2ED"/>
+  <rect x="60" y="50" width="200" height="130" rx="16" fill="rgba(107,158,122,.08)" stroke="#A8C5B0" stroke-width="1.5" stroke-dasharray="8,6"/>
+  <circle cx="160" cy="100" r="24" fill="rgba(107,158,122,.12)" stroke="#A8C5B0" stroke-width="1.5"/>
+  <path d="M150 100 L158 100 L158 92" stroke="#6B9E7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M162 92 L162 100 L170 100" stroke="#6B9E7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M150 108 L170 108" stroke="#6B9E7A" stroke-width="2" stroke-linecap="round"/>
+  <text x="160" y="155" text-anchor="middle" font-size="13" fill="#6B9E7A" font-family="Plus Jakarta Sans, sans-serif" font-weight="600">Placeholder image</text>
+</svg>`;
+
+const ILLUSTRATIONS = {
+  shower: PLACEHOLDER_ILLUS,
+  mirror: PLACEHOLDER_ILLUS,
+  feel: PLACEHOLDER_ILLUS,
+  epididymis: PLACEHOLDER_ILLUS,
+  magnify: PLACEHOLDER_ILLUS,
+  calendar: PLACEHOLDER_ILLUS,
+  'arms-side': PLACEHOLDER_ILLUS,
+  'arms-up': PLACEHOLDER_ILLUS,
+  lying: PLACEHOLDER_ILLUS,
+  trace: PLACEHOLDER_ILLUS,
+  nipple: PLACEHOLDER_ILLUS,
+  done: `<svg viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="260" fill="#EAF2ED"/>
+    <circle cx="160" cy="124" r="80" fill="rgba(107,158,122,.12)" stroke="#6B9E7A" stroke-width="2.5"/>
+    <circle cx="160" cy="124" r="62" fill="rgba(107,158,122,.08)" stroke="#A8C5B0" stroke-width="1.5"/>
+    <path d="M118 124 L146 152 L202 96" stroke="#456B52" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="160" y="232" text-anchor="middle" font-size="14" fill="#456B52" font-family="Plus Jakarta Sans, sans-serif" font-weight="700">Check complete — record your findings</text>
+  </svg>`,
+};
+
+const ARTICLES = {
+  testis: [
+    { id:'t1', tag:'Testicular', readtime:'3 min', title:'Signs & symptoms to look for', preview:'Learn what changes to look and feel for during a self-check.',
+      content: [
+        { type:'p', text:'The most common sign of testicular cancer is a painless lump or swelling on one testicle. Around one in ten are painful.' },
+        { type:'heading', text:'Other signs to be aware of:' },
+        { type:'ul', items:['A change in the size or feel of a testicle — harder, softer, or heavier than usual','A dull ache or sense of heaviness in the scrotum','A persistent ache in the lower abdomen or back','In rare cases, breast tissue tenderness or enlargement (due to hormonal changes)'] },
+        { type:'p', text:'Testicular cancer most commonly affects men between the ages of 18 and 39, and is the second most common cancer in young Australian men in this age group.' },
+        { type:'p', text:'Many conditions cause changes in the testicles — including cysts, varicoceles (varicose veins), epididymitis (inflammation), and testicular torsion. These are far more common than cancer. Only a doctor can tell the difference.' },
+        { type:'cite', text:'Cancer Council Australia · Better Health Channel · Cancer Council NSW' }
+      ]
+    },
+    { id:'t2', tag:'Testicular', readtime:'2 min', title:'Myths vs facts', preview:'Separate the truth from common misconceptions about testicular cancer.',
+      content: [
+        { type:'myth', myth:'A lump means cancer.', fact:'Most lumps and changes in the testicles are caused by other, benign conditions — such as cysts or inflammation. Only a doctor can determine the cause.' },
+        { type:'myth', myth:"If it doesn't hurt, it's not serious.", fact:'Testicular cancer is often painless. A painless lump is the most common sign. Pain alone is not a reliable indicator.' },
+        { type:'myth', myth:'Tight clothing or sports injuries cause testicular cancer.', fact:'There is no known link between testicular cancer and injury, tight clothing, hot baths, or physical activity.' },
+        { type:'myth', myth:"I'm too young to get testicular cancer.", fact:'Testicular cancer is most common in men aged 18–39. It\'s one of the most common cancers in young men in Australia.' },
+        { type:'myth', myth:"Testicular cancer can't be cured.", fact:'Testicular cancer is one of the most treatable cancers. When detected early, outcomes are excellent.' },
+        { type:'cite', text:'Cancer Council Australia · Better Health Channel · Cancer Council NSW' }
+      ]
+    },
+    { id:'t3', tag:'Testicular', readtime:'2 min', title:'When to see your GP', preview:'Know exactly when to act and what to say when you call.',
+      content: [
+        { type:'heading', text:'See your GP as soon as possible if you notice:' },
+        { type:'ul', items:['A new lump or swelling on or around a testicle','A change in the size or feel of a testicle','A dull, persistent ache in the scrotum, lower abdomen, or back','A sense of heaviness in the scrotum'] },
+        { type:'p', text:"Don't wait to see if it goes away. Early investigation is always the right call — if it turns out to be nothing, you'll have peace of mind. If it's something, you'll have caught it early, when treatment is most effective." },
+        { type:'p', text:'You don\'t need a referral. Call your GP and tell them you\'ve done a self-check and noticed something different. They will examine you and decide if further tests — like an ultrasound — are needed.' },
+        { type:'cite', text:'Cancer Council Australia' }
+      ]
+    },
+    { id:'t4', tag:'Testicular', readtime:'3 min', title:'Frequently asked questions', preview:'Answers to the questions people most often ask about self-checks.',
+      content: [
+        { type:'heading', text:'How often should I check?' },
+        { type:'p', text:'Once a month is recommended. Regularity helps you know what\'s normal for you, making changes easier to spot. The first day of each month is an easy anchor.' },
+        { type:'heading', text:'Is it normal for one testicle to be bigger?' },
+        { type:'p', text:"Yes — this is very common and not a cause for concern in itself. What matters is any new or recent change." },
+        { type:'heading', text:'What is the epididymis?' },
+        { type:'p', text:"The epididymis is a soft, coiled tube at the back of each testicle. It's completely normal to feel it. Many people mistake it for a lump during their first self-check." },
+        { type:'heading', text:'What happens if I find something?' },
+        { type:'p', text:"Most findings are benign. Your GP will examine you, and if needed, arrange an ultrasound. Try not to panic — but don't delay either." },
+        { type:'cite', text:'Cancer Council Australia · Better Health Channel' }
+      ]
+    },
+  ],
+  breast: [
+    { id:'b1', tag:'Breast', readtime:'3 min', title:'Signs & symptoms to look for', preview:'Understand what changes in your breasts or chest deserve attention.',
+      content: [
+        { type:'p', text:'Many people with breast cancer have no symptoms at all — the change is found during a routine mammogram. This is why regular screening matters alongside self-checks.' },
+        { type:'heading', text:'When symptoms are present, they may include:' },
+        { type:'ul', items:['A new lump or thickening in the breast or under the armpit — often hard, irregular, and not painful','A change in the size or shape of one breast','Skin dimpling, puckering, or redness — sometimes resembling the skin of an orange','A nipple that has recently turned inward, or changed in appearance','Discharge from a nipple that occurs without squeezing, is blood-stained, or from one breast only','Persistent pain in one breast not related to your menstrual cycle'] },
+        { type:'p', text:'Breast cancer is the second most commonly diagnosed cancer in Australia. Around 1 in 8 females and 1 in 667 males will be diagnosed in their lifetime.' },
+        { type:'p', text:'Most breast changes are benign. Hormonal changes, cysts, fibroadenomas, and infections are all common causes. A GP can help determine the cause.' },
+        { type:'cite', text:'Cancer Council Australia · Cancer Australia · healthdirect' }
+      ]
+    },
+    { id:'b2', tag:'Breast', readtime:'2 min', title:'Myths vs facts', preview:'Common misconceptions about breast cancer — cleared up.',
+      content: [
+        { type:'myth', myth:'Only older women get breast cancer.', fact:'Breast cancer can affect people of any age, including men. While risk increases with age, younger people are diagnosed too.' },
+        { type:'myth', myth:'A lump is always painful.', fact:"Most breast lumps — including cancerous ones — are painless. Don't wait for pain to be your signal." },
+        { type:'myth', myth:'Breast cancer only happens if it runs in the family.', fact:'Most people diagnosed with breast cancer have no family history of it. Family history can increase risk, but is not required.' },
+        { type:'myth', myth:"Men don't need to check.", fact:'Men can develop breast cancer, though it is rare. Anyone with breast tissue should be aware of changes.' },
+        { type:'myth', myth:'Self-checks replace mammograms.', fact:'Self-checks and mammograms serve different purposes. If you\'re 40 or over, speak to your GP about screening options.' },
+        { type:'cite', text:'Cancer Council Australia · healthdirect' }
+      ]
+    },
+    { id:'b3', tag:'Breast', readtime:'2 min', title:'When to see your GP', preview:'Know when to act and what your GP will do next.',
+      content: [
+        { type:'heading', text:'See your GP as soon as possible if you notice:' },
+        { type:'ul', items:['A new lump or thickening in the breast or armpit','Any change in size, shape, or feel of one breast','Skin changes — dimpling, puckering, redness, or a rash','A nipple that has recently turned inward, or is producing discharge','Persistent pain in one specific area of a breast'] },
+        { type:'p', text:"Don't wait. Changes to the breast can have many benign causes — but the only way to know is to have them assessed. Your GP will take your concerns seriously and guide you through the next steps." },
+        { type:'p', text:"If you're aged 40–74, you're also eligible for free screening mammograms through BreastScreen Australia. Ask your GP or visit breastscreen.org.au." },
+        { type:'cite', text:'Cancer Council Australia · Cancer Australia' }
+      ]
+    },
+    { id:'b4', tag:'Breast', readtime:'3 min', title:'Frequently asked questions', preview:'Everything you wanted to know about breast self-checks.',
+      content: [
+        { type:'heading', text:'When is the best time to check?' },
+        { type:'p', text:'If you menstruate, check a few days after your period ends, when your breasts are least tender. If you don\'t menstruate, the same date each month works well.' },
+        { type:'heading', text:'Is it normal for breasts to feel lumpy?' },
+        { type:'p', text:'Yes — breast tissue is naturally uneven, and it can change throughout the month. Getting to know your own normal makes it easier to recognise anything new.' },
+        { type:'heading', text:'What if I find a lump?' },
+        { type:'p', text:"Book a GP appointment as soon as possible. Most lumps are not cancer, but it's always worth getting checked. Your GP may refer you for an ultrasound or mammogram." },
+        { type:'heading', text:'Do men need to do breast checks?' },
+        { type:'p', text:'Yes. While breast cancer in men is rare, it does occur. Men should be aware of any changes to their chest area and see a GP if they notice anything unusual.' },
+        { type:'heading', text:'What age should I start checking?' },
+        { type:'p', text:"There's no set age to start — the earlier you establish awareness of your normal, the better. Cancer Australia suggests you can begin self-checks from your 20s." },
+        { type:'cite', text:'Cancer Council Australia · Cancer Australia · Breast Cancer Network Australia' }
+      ]
+    },
+  ]
+};
+
+const BADGES_DEF = [
+  { id:'first_step',    icon:'🟢', name:'First Step',       desc:'Completed your first check.',             unlock:'Complete your first check.' },
+  { id:'getting_reg',  icon:'🔵', name:'Getting Regular',   desc:'3 checks completed.',                      unlock:'Complete 3 checks.' },
+  { id:'committed',    icon:'🟣', name:'Committed',         desc:'6 checks completed.',                      unlock:'Complete 6 checks.' },
+  { id:'champion',     icon:'🏅', name:'Champion',          desc:'12 checks. A full year of self-care.',    unlock:'Complete 12 checks.' },
+  { id:'dedicated',    icon:'🌟', name:'Dedicated',         desc:'24 checks. Two years strong.',             unlock:'Complete 24 checks.' },
+  { id:'brave',        icon:'💛', name:'Brave',             desc:'Logged a concern. That took courage.',     unlock:'Log an unsure or concern finding.' },
+  { id:'follow_thru',  icon:'💚', name:'Follow Through',    desc:'Came back after logging a concern.',       unlock:'Log a concern, then complete your next check.' },
+  { id:'informed',     icon:'📖', name:'Informed',          desc:'Read all articles in the Learn section.',  unlock:'Read all 8 articles in Learn.' },
+  { id:'know_body',    icon:'🔍', name:'Know Your Body',    desc:'Completed both check types.',              unlock:'Complete both a testicular and breast check.' },
+  { id:'one_year',     icon:'📅', name:'One Year In',       desc:'Using TBC for 12 months.',                 unlock:'Use TBC for 12 months.' },
+  { id:'two_year',     icon:'🎯', name:'Two Years Strong',  desc:'Two years. You\'re an example.',           unlock:'Use TBC for 24 months.' },
+];
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+
+let profile  = JSON.parse(localStorage.getItem('tbc_profile') || 'null');
+let records  = JSON.parse(localStorage.getItem('tbc_records') || '[]');
+let badges   = JSON.parse(localStorage.getItem('tbc_badges')  || '{"earned":[],"articlesRead":[]}');
+
+let currentCheck   = null;
+let currentStep    = 0;
+let selectedFinding = null;
+let currentLearnTab = 'testis';
+let onboardStep    = 0;
+let onboardData    = {};
+let pendingBadge   = null;
+
+// ═══════════════════════════════════════════════════════
+//  TOAST SYSTEM (replaces alert)
+// ═══════════════════════════════════════════════════════
+
+function showToast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast' + (isError ? ' toast-error' : '');
+  // Force reflow to restart animation
+  void el.offsetWidth;
+  el.classList.add('visible');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('visible'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  EDIT MODAL SYSTEM (replaces prompt/confirm)
+// ═══════════════════════════════════════════════════════
+
+function showEditModal(html) {
+  document.getElementById('edit-modal-content').innerHTML = html;
+  document.getElementById('edit-modal').style.display = 'flex';
+  // Prevent body scroll behind modal
+  document.body.style.overflow = 'hidden';
+  // Focus first input after a tick
+  setTimeout(() => {
+    const inp = document.querySelector('#edit-modal-content input, #edit-modal-content textarea, #edit-modal-content select');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function closeEditModal(e) {
+  if (!e || e.target === document.getElementById('edit-modal')) {
+    document.getElementById('edit-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+function showConfirmModal(title, message, confirmLabel, onConfirm, isDanger) {
+  const html = `
+    <div style="text-align:center;">
+      <h2 style="margin-bottom:12px;">${title}</h2>
+      <p class="body" style="margin-bottom:24px;">${message}</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn ${isDanger ? 'btn-concern' : 'btn-primary'}" onclick="(${onConfirm.toString()})(); document.getElementById('confirm-modal').style.display='none'; document.body.style.overflow='';">${confirmLabel}</button>
+        <button class="btn btn-ghost" onclick="closeConfirmModal()">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('confirm-modal-content').innerHTML = html;
+  document.getElementById('confirm-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeConfirmModal(e) {
+  if (!e || e.target === document.getElementById('confirm-modal')) {
+    document.getElementById('confirm-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+// FIX 2: Track which nav tab should be highlighted
+const NAV_SCREENS = { home:'home', history:'history', learn:'learn', profile:'profile' };
+
+function updateNavHighlight(screenId) {
+  const navEl = document.getElementById('main-nav');
+  if (!navEl) return;
+  navEl.querySelectorAll('.nav-tab[data-nav]').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.nav === screenId);
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) {
+    el.classList.add('active');
+    // Refresh content
+    if (id === 'home')     renderDashboard();
+    if (id === 'history')  renderHistory();
+    if (id === 'profile')  renderProfile();
+    if (id === 'badges')   renderBadges();
+    if (id === 'learn')    renderArticleList();
+    if (id === 'record')   initRecord();
+    if (id === 'cycle')    initCycleScreen();
+    // Update nav highlight
+    if (NAV_SCREENS[id]) updateNavHighlight(id);
+    // Accessibility: scroll to top and move focus to heading
+    const scroll = el.querySelector('.screen-scroll, .dashboard-scroll');
+    if (scroll) scroll.scrollTop = 0;
+    setTimeout(() => {
+      const heading = el.querySelector('h1');
+      if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus({ preventScroll: true }); }
+    }, 60);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  SPLASH → ONBOARD or HOME
+// ═══════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', () => {
+  const splash = document.getElementById('screen-splash');
+  setTimeout(() => {
+    // Fade out the splash screen
+    splash.classList.add('fade-out');
+    // After fade completes, switch to next screen
+    setTimeout(() => {
+      if (profile && profile.onboardingComplete) {
+        showScreen('home');
+        checkAndFireReminder();
+      } else {
+        onboardStep = 0;
+        onboardData = {};
+        showScreen('onboard');
+        renderOnboardStep();
+      }
+    }, 600);
+  }, 2000);
+});
+
+// ═══════════════════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════════════════
+
+const ONBOARD_STEPS_BASE = ['welcome','name','age','checks','frequency','disclaimer'];
+
+function getOnboardSteps() {
+  const base = ['welcome','name','age','checks','frequency'];
+  const checks = onboardData.checksEnabled || [];
+  if (checks.includes('breast')) {
+    base.push('cycle-opt');
+    if (onboardData.cycleOpt === 'yes') base.push('cycle-detail');
+  }
+  base.push('disclaimer');
+  return base;
+}
+
+function renderOnboardPips() {
+  const steps = getOnboardSteps();
+  const pips = document.getElementById('onboard-pips');
+  pips.innerHTML = steps.map((_,i) =>
+    `<div class="onboard-pip ${i < onboardStep ? 'done' : ''}"></div>`
+  ).join('');
+}
+
+function renderOnboardStep() {
+  const steps = getOnboardSteps();
+  const step  = steps[onboardStep];
+  renderOnboardPips();
+
+  const body   = document.getElementById('onboard-body');
+  const footer = document.getElementById('onboard-footer');
+
+  const isLast = onboardStep === steps.length - 1;
+
+  const renderNext = (label='Next →', disabled=false, btnId='ob-next-btn') => `
+    <button class="btn btn-primary" id="${btnId}" onclick="onboardNext()" ${disabled ? 'disabled' : ''}>${label}</button>
+    ${onboardStep > 0 ? `<button class="btn btn-ghost" onclick="onboardBack()">← Back</button>` : ''}
+  `;
+
+  const wireInput = (inputId) => setTimeout(() => {
+    const inp = document.getElementById(inputId);
+    const btn = document.getElementById('ob-next-btn');
+    if (!inp || !btn) return;
+    const check = () => { btn.disabled = !inp.value.trim(); };
+    inp.addEventListener('input', check);
+    check();
+    inp.focus();
+  }, 50);
+
+  switch(step) {
+    case 'welcome':
+      body.innerHTML = `
+        <div class="display" style="margin-bottom:16px;">Know your<br><em>body.</em></div>
+        <p class="body-lg" style="color:var(--text-secondary);line-height:1.75;">TBC guides you through simple monthly self-checks — the kind that take five minutes and could change everything.</p>
+      `;
+      footer.innerHTML = `<button class="btn btn-primary" onclick="onboardNext()">Let's go →</button>`;
+      break;
+
+    case 'name':
+      body.innerHTML = `
+        <h1 style="margin-bottom:24px;">First, what should<br>we call you?</h1>
+        <div class="input-group">
+          <input type="text" id="ob-name" placeholder="Your name" value="${onboardData.name||''}"
+            oninput="onboardData.name=this.value">
+        </div>
+      `;
+      footer.innerHTML = renderNext('Next →', !onboardData.name?.trim());
+      wireInput('ob-name');
+      break;
+
+    case 'age':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">How old are you?</h1>
+        <p class="body" style="margin-bottom:24px;">We use this to show you age-relevant tips. Nothing else.</p>
+        <div class="input-group">
+          <input type="number" id="ob-age" placeholder="Your age" min="1" max="120" value="${onboardData.age||''}"
+            oninput="onboardData.age=this.value">
+        </div>
+      `;
+      footer.innerHTML = renderNext('Next →', !onboardData.age);
+      wireInput('ob-age');
+      break;
+
+    case 'checks':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">Which checks apply to you?</h1>
+        <p class="body" style="margin-bottom:24px;">You can change this any time in your profile.</p>
+        <div class="option-list">
+          ${['testis','breast','both'].map(v => {
+            const labels = {testis:'Testicular check',breast:'Breast check',both:'Both checks'};
+            return `<div class="option-item ${onboardData.checkChoice===v?'selected':''}" onclick="selectCheckType('${v}',this)">
+              <div class="option-radio"></div>
+              <div class="option-label">${labels[v]}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+      footer.innerHTML = renderNext('Next →', !onboardData.checkChoice);
+      break;
+
+    case 'frequency':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">How often should we nudge you?</h1>
+        <p class="body" style="margin-bottom:24px;">Monthly is what health experts recommend. Life happens — you can always adjust.</p>
+        <div class="option-list">
+          ${[['monthly','Monthly'],['bimonthly','Every 2 months'],['quarterly','Quarterly'],['off',"I'll remember myself"]].map(([v,l]) =>
+            `<div class="option-item ${onboardData.frequency===v?'selected':''}" onclick="selectFreq('${v}',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">${l}${v==='monthly'?' <span class="pill pill-sage" style="font-size:.65rem;vertical-align:middle;">Recommended</span>':''}</div>
+              </div>
+            </div>`
+          ).join('')}
+        </div>
+      `;
+      footer.innerHTML = renderNext('Next →', !onboardData.frequency);
+      break;
+
+    case 'cycle-opt':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">Want a smarter reminder?</h1>
+        <p class="body" style="margin-bottom:16px;">The best time for a breast check is a few days after your period ends — when your breasts are least tender and easiest to examine.</p>
+        <p class="body" style="margin-bottom:24px;">If you menstruate, we can time your reminder to that window automatically.</p>
+        <div class="option-list">
+          <div class="option-item ${onboardData.cycleOpt==='yes'?'selected':''}" onclick="selectCycleOpt('yes',this)">
+            <div class="option-radio"></div>
+            <div>
+              <div class="option-label">Yes, set up cycle tracking</div>
+              <div class="option-sub">Takes about 30 seconds</div>
+            </div>
+          </div>
+          <div class="option-item ${onboardData.cycleOpt==='no'?'selected':''}" onclick="selectCycleOpt('no',this)">
+            <div class="option-radio"></div>
+            <div class="option-label">Skip for now</div>
+          </div>
+        </div>
+      `;
+      footer.innerHTML = renderNext('Next →', !onboardData.cycleOpt);
+      break;
+
+    case 'cycle-detail': {
+      const cycleAllFilled = !!(onboardData.cycleStart && onboardData.cycleLen && onboardData.cycleDur);
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">Tell us about your cycle.</h1>
+        <p class="body" style="margin-bottom:24px;">This stays on your device. We never share it.</p>
+        <div class="stack stack-md">
+          <div class="input-group">
+            <label class="label">When did your last period start?</label>
+            <input type="date" id="ob-cycle-start" value="${onboardData.cycleStart||''}" oninput="onboardData.cycleStart=this.value;updateObCyclePreview();checkCycleFields()">
+          </div>
+          <div class="input-group">
+            <label class="label">Average cycle length (days)</label>
+            <input type="number" id="ob-cycle-len" placeholder="28" min="15" max="60" value="${onboardData.cycleLen||''}" oninput="onboardData.cycleLen=this.value;updateObCyclePreview();checkCycleFields()">
+            <div class="helper-text">Count from the first day of one period to the first day of the next.</div>
+          </div>
+          <div class="input-group">
+            <label class="label">How long does your period usually last? (days)</label>
+            <input type="number" id="ob-cycle-dur" placeholder="5" min="1" max="14" value="${onboardData.cycleDur||''}" oninput="onboardData.cycleDur=this.value;updateObCyclePreview();checkCycleFields()">
+          </div>
+          <div id="ob-cycle-preview"></div>
+          <div style="font-size:.8rem;color:var(--text-muted);line-height:1.5;">🔒 Your cycle data is stored only on this device. Never shared.</div>
+        </div>
+      `;
+      footer.innerHTML = renderNext('Save and continue →', !cycleAllFilled);
+      updateObCyclePreview();
+      break;
+    }
+
+    case 'disclaimer':
+      body.innerHTML = `
+        <h1 style="margin-bottom:16px;">Before we begin.</h1>
+        <div class="card-concern" style="margin-bottom:16px;">
+          <p style="font-size:.9rem;line-height:1.7;color:var(--text-secondary);">TBC is a self-awareness tool, not a medical service. The information here is general in nature and based on guidance from Cancer Council Australia and other credible health sources.<br><br>Self-checks are not a substitute for professional medical advice, diagnosis, or treatment. If you notice any changes, please see your GP promptly.</p>
+        </div>
+        <div class="option-item ${onboardData.disclaimerOk?'selected':''}" onclick="toggleDisclaimer(this)" style="margin-top:8px;">
+          <div class="option-radio"></div>
+          <div class="option-label">I understand and agree</div>
+        </div>
+      `;
+      footer.innerHTML = `
+        <button class="btn btn-primary" onclick="onboardFinish()" ${onboardData.disclaimerOk?'':'disabled'} id="ob-finish-btn">Get started →</button>
+      `;
+      break;
+  }
+}
+
+function selectCheckType(v, el) {
+  onboardData.checkChoice = v;
+  onboardData.checksEnabled = v === 'both' ? ['testis','breast'] : [v];
+  document.querySelectorAll('#screen-onboard .option-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('ob-next-btn');
+  if (btn) btn.disabled = false;
+}
+function selectFreq(v, el) {
+  onboardData.frequency = v;
+  document.querySelectorAll('#screen-onboard .option-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('ob-next-btn');
+  if (btn) btn.disabled = false;
+}
+function selectCycleOpt(v, el) {
+  onboardData.cycleOpt = v;
+  document.querySelectorAll('#screen-onboard .option-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('ob-next-btn');
+  if (btn) btn.disabled = false;
+}
+function toggleDisclaimer(el) {
+  onboardData.disclaimerOk = !onboardData.disclaimerOk;
+  el.classList.toggle('selected', onboardData.disclaimerOk);
+  const btn = document.getElementById('ob-finish-btn');
+  if (btn) btn.disabled = !onboardData.disclaimerOk;
+}
+
+function updateObCyclePreview() {
+  const pre = document.getElementById('ob-cycle-preview');
+  if (!pre) return;
+  const start = onboardData.cycleStart;
+  const len   = parseInt(onboardData.cycleLen);
+  const dur   = parseInt(onboardData.cycleDur);
+  if (start && len && dur) {
+    const d = calcNextReminder(start, len, dur);
+    pre.style.display = 'block';
+    pre.className = 'cycle-preview';
+    pre.innerHTML = `<div class="cycle-preview-date">📅 Next reminder: ${fmtDate(d)}</div><div class="cycle-preview-note">About 3 days after your next estimated period ends — the ideal window.</div>`;
+  } else {
+    pre.style.display = 'none';
+  }
+}
+
+function checkCycleFields() {
+  const btn = document.getElementById('ob-next-btn');
+  if (!btn) return;
+  const start = document.getElementById('ob-cycle-start')?.value;
+  const len   = document.getElementById('ob-cycle-len')?.value;
+  const dur   = document.getElementById('ob-cycle-dur')?.value;
+  btn.disabled = !(start && len && dur);
+}
+
+function onboardNext() {
+  const steps = getOnboardSteps();
+  if (onboardStep < steps.length - 1) {
+    onboardStep++;
+    renderOnboardStep();
+  }
+}
+
+function onboardBack() {
+  if (onboardStep > 0) { onboardStep--; renderOnboardStep(); }
+}
+
+function onboardFinish() {
+  if (!onboardData.disclaimerOk) return;
+  const hasCycle = onboardData.cycleOpt === 'yes' && onboardData.cycleStart && onboardData.cycleLen && onboardData.cycleDur;
+  profile = {
+    name: onboardData.name?.trim() || 'there',
+    age: parseInt(onboardData.age) || null,
+    checksEnabled: onboardData.checksEnabled || ['testis','breast'],
+    reminderFrequency: hasCycle ? 'cycle-based' : (onboardData.frequency || 'monthly'),
+    cycleTracking: {
+      enabled: hasCycle,
+      lastPeriodStart: onboardData.cycleStart || null,
+      averageCycleLength: parseInt(onboardData.cycleLen) || 28,
+      averagePeriodDuration: parseInt(onboardData.cycleDur) || 5,
+      nextReminderDate: hasCycle ? calcNextReminder(onboardData.cycleStart, parseInt(onboardData.cycleLen), parseInt(onboardData.cycleDur)).toISOString() : null,
+    },
+    disclaimerAccepted: true,
+    disclaimerAcceptedAt: new Date().toISOString(),
+    onboardingComplete: true,
+    onboardingDate: new Date().toISOString(),
+  };
+  saveProfile();
+  showScreen('home');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════
+
+function renderDashboard() {
+  if (!profile) return;
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('home-greeting').innerHTML = `${greet}, <em>${profile.name}.</em>`;
+
+  const totalChecks = records.length;
+  const lastRecord  = records[0] || null;
+  const checks = profile.checksEnabled || ['testis','breast'];
+
+  const nextDue = getNextDueDate();
+  const daysUntil = nextDue ? Math.ceil((nextDue - new Date()) / 86400000) : null;
+  let nextLabel, nextSub;
+  if (daysUntil === null) {
+    nextLabel = "Time to check in.";
+    nextSub   = "You haven't set up a schedule yet.";
+  } else if (daysUntil < 0) {
+    nextLabel = "Your check is overdue.";
+    nextSub   = `Don't put it off — it only takes 5 minutes.`;
+  } else if (daysUntil === 0) {
+    nextLabel = "Today's a good day to check.";
+    nextSub   = "Set aside 5 minutes for yourself.";
+  } else if (daysUntil <= 3) {
+    nextLabel = `Check coming up in ${daysUntil} day${daysUntil===1?'':'s'}.`;
+    nextSub   = "Almost time — you've got this.";
+  } else {
+    nextLabel = `Next check due ${fmtDate(nextDue)}.`;
+    nextSub   = "You're on top of it. ✓";
+  }
+
+  const newBadge = pendingBadge;
+  pendingBadge = null;
+
+  const html = `
+    ${newBadge ? `<div class="badge-banner" onclick="showScreen('badges')">
+      <span style="font-size:1.75rem;">${newBadge.icon}</span>
+      <div>
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.75;">New badge earned</div>
+        <div style="font-weight:600;font-size:.9375rem;">${newBadge.name}</div>
+        <div style="font-size:.8rem;opacity:.8;">${newBadge.desc}</div>
+      </div>
+    </div>` : ''}
+
+    <div class="card-hero hero-card">
+      <div class="hero-card-label">${checks.length > 1 ? 'Self checks' : checks[0] === 'testis' ? 'Testicular check' : 'Breast check'}</div>
+      <div class="hero-card-title">${nextLabel}</div>
+      <div class="hero-card-sub">${nextSub}</div>
+      <button class="btn btn-primary" onclick="startCheckFlow()">Start check →</button>
+    </div>
+
+    <div class="small-card-row">
+      <div class="card small-card">
+        <div class="card-label">Total checks</div>
+        <div class="card-value">${totalChecks}</div>
+        <div class="card-sub">${totalChecks === 0 ? 'Start your first' : 'and counting'}</div>
+      </div>
+      <div class="card small-card" style="cursor:pointer;" onclick="showScreen('badges')">
+        <div class="card-label">Badges</div>
+        <div class="card-value">${badges.earned.length}</div>
+        <div class="card-sub">of ${BADGES_DEF.length} earned</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <h3>Recent checks</h3>
+      </div>
+      ${lastRecord ? `
+        <div class="history-item" onclick="showScreen('history')">
+          <div class="status-dot ${lastRecord.finding}"></div>
+          <div class="history-info">
+            <div class="history-type">${lastRecord.type === 'testis' ? 'Testicular' : 'Breast'} check</div>
+            <div class="history-date">${fmtDate(new Date(lastRecord.date))}</div>
+            ${lastRecord.notes ? `<div class="history-notes">${lastRecord.notes}</div>` : ''}
+          </div>
+          <span class="pill ${lastRecord.finding === 'clear' ? 'pill-sage' : lastRecord.finding === 'unsure' ? 'pill-amber' : 'pill-terracotta'}">${lastRecord.finding === 'clear' ? 'Clear' : lastRecord.finding === 'unsure' ? 'Unsure' : 'Concern'}</span>
+        </div>
+      ` : `<p class="body" style="text-align:center;padding:16px 0;">No checks recorded yet.<br>Complete your first one today.</p>`}
+      <div class="card-action">
+        <button class="card-action-link" onclick="showScreen('history')">View full history →</button>
+      </div>
+    </div>
+
+    <div class="card" style="cursor:pointer;" onclick="showScreen('learn')">
+      <h3>Know the signs</h3>
+      <p class="body" style="margin-top:6px;">Understanding what to look for makes checking easier and less daunting.</p>
+      <div class="card-action">
+        <button class="card-action-link" onclick="showScreen('learn')">Explore →</button>
+      </div>
+    </div>
+
+    <div class="card" style="cursor:pointer;" onclick="showScreen('resources')">
+      <h3>Found something?</h3>
+      <p class="body" style="margin-top:6px;">Don't wait. We'll help you know what to do next.</p>
+      <div class="card-action">
+        <button class="card-action-link" onclick="showScreen('resources')">View resources →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Reminders</h3>
+      <p class="body" style="margin-top:6px;margin-bottom:14px;">${getReminderSummary()}</p>
+      <button class="card-action-link" onclick="showScreen('profile')">Update →</button>
+    </div>
+  `;
+  document.getElementById('dashboard-scroll').innerHTML = html;
+}
+
+function getReminderSummary() {
+  if (!profile) return '';
+  if (profile.reminderFrequency === 'cycle-based' && profile.cycleTracking?.nextReminderDate) {
+    return `Your breast check reminder is timed to your cycle — next up on ${fmtDate(new Date(profile.cycleTracking.nextReminderDate))}.`;
+  }
+  const map = { monthly:'monthly', bimonthly:'every 2 months', quarterly:'quarterly', off:'off' };
+  return `Reminders set to ${map[profile.reminderFrequency] || 'monthly'}. You can change this any time.`;
+}
+
+function getNextDueDate() {
+  if (!profile || !records.length) return null;
+  const last = new Date(records[0].date);
+  if (profile.reminderFrequency === 'cycle-based' && profile.cycleTracking?.nextReminderDate) {
+    return new Date(profile.cycleTracking.nextReminderDate);
+  }
+  const days = { monthly:30, bimonthly:60, quarterly:90, off:null }[profile.reminderFrequency];
+  if (!days) return null;
+  return new Date(last.getTime() + days * 86400000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CHECK FLOW
+// ═══════════════════════════════════════════════════════
+
+function startCheckFlow() {
+  const checks = profile?.checksEnabled || ['testis','breast'];
+  if (checks.length === 1) {
+    startCheck(checks[0]);
+  } else {
+    showScreen('check-select');
+  }
+}
+
+function startCheck(type) {
+  currentCheck = type;
+  currentStep  = 0;
+  renderStep();
+  showScreen('check-steps');
+}
+
+function renderStep() {
+  const steps = STEPS[currentCheck];
+  const step  = steps[currentStep];
+  const total = steps.length;
+
+  document.getElementById('step-counter').textContent = `Step ${currentStep+1} of ${total}`;
+  document.getElementById('step-title').textContent   = step.title;
+
+  document.getElementById('step-progress').innerHTML = steps.map((_,i) =>
+    `<div class="step-pip ${i < currentStep ? 'done' : i === currentStep ? 'active' : ''}"></div>`
+  ).join('');
+
+  const lines = step.instruction.split('\n\n').map(l => `<p class="step-instruction">${l}</p>`).join('');
+  document.getElementById('step-content').innerHTML = `
+    <div class="step-illus-panel">${ILLUSTRATIONS[step.illus] || `<span style="font-size:4rem;">✨</span>`}</div>
+    <div class="step-text-panel">
+      ${lines}
+      <div class="card-tip">
+        <span style="font-size:.8rem;font-weight:600;color:var(--tbc-sage-dark);">💡 Tip</span>
+        <p style="font-size:.875rem;color:var(--text-secondary);margin-top:4px;line-height:1.6;">${step.tip}</p>
+      </div>
+      ${step.cite ? `<div class="citation">Sources: ${step.cite}</div>` : ''}
+    </div>
+  `;
+
+  const isLast = currentStep === total - 1;
+  document.getElementById('step-next-btn').textContent = isLast ? '✏️ Record findings' : 'Next →';
+  document.getElementById('step-prev-btn').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+}
+
+function nextStep() {
+  const total = STEPS[currentCheck].length;
+  if (currentStep < total - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    showScreen('record');
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) { currentStep--; renderStep(); }
+  else showScreen('check-select');
+}
+
+function stepBack() {
+  if (currentStep > 0) prevStep();
+  else showScreen('check-select');
+}
+
+// ═══════════════════════════════════════════════════════
+//  RECORD & RESULT
+// ═══════════════════════════════════════════════════════
+
+function initRecord() {
+  selectedFinding = null;
+  document.querySelectorAll('#finding-options .option-item').forEach(el => {
+    el.classList.remove('selected','selected-concern','selected-amber');
+    el.querySelector('.option-radio').style.background = '';
+    el.querySelector('.option-radio').style.borderColor = '';
+  });
+  document.getElementById('finding-notes').value = '';
+  document.getElementById('finding-date').textContent = new Date().toLocaleDateString('en-AU', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+function selectFinding(el, type) {
+  selectedFinding = type;
+  document.querySelectorAll('#finding-options .option-item').forEach(i => {
+    i.classList.remove('selected','selected-concern','selected-amber');
+    i.setAttribute('aria-checked', 'false');
+  });
+  el.setAttribute('aria-checked', 'true');
+  if (type === 'clear')   el.classList.add('selected');
+  if (type === 'unsure')  el.classList.add('selected-amber');
+  if (type === 'concern') el.classList.add('selected-concern');
+}
+
+// FIX 1: saveRecord uses toast instead of alert
+function saveRecord() {
+  if (!selectedFinding) {
+    showToast('Please select what you found before saving.', true);
+    return;
+  }
+  const record = {
+    id: Date.now().toString(),
+    type: currentCheck,
+    finding: selectedFinding,
+    notes: document.getElementById('finding-notes').value.trim(),
+    date: new Date().toISOString(),
+  };
+  records.unshift(record);
+  saveRecords();
+  checkAndAwardBadges(record);
+  renderResultScreen(record);
+  showScreen('result');
+}
+
+function renderResultScreen(record) {
+  const isConcern = record.finding !== 'clear';
+  const wrap = document.getElementById('result-wrap');
+  if (!isConcern) {
+    const next = getNextDueDate();
+    wrap.innerHTML = `
+      <div class="result-icon-wrap clear confirm-icon">✅</div>
+      <div style="text-align:center;">
+        <h1 style="margin-bottom:10px;">You're all done.</h1>
+        <p class="body">Great work — no unusual changes recorded. Keep up the monthly checks and you'll always know what's normal for you.</p>
+        ${next ? `<p style="margin-top:10px;font-size:.875rem;color:var(--tbc-sage);font-weight:500;">Next check due ${fmtDate(next)}.</p>` : ''}
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="showScreen('home')">🏠 Back to home</button>
+        <button class="btn btn-secondary" onclick="showScreen('history')">View history</button>
+      </div>
+    `;
+  } else {
+    wrap.innerHTML = `
+      <div class="result-icon-wrap concern confirm-icon">⚠️</div>
+      <div style="text-align:center;">
+        <h1 style="margin-bottom:10px;">Thanks for being honest with yourself.</h1>
+        <p class="body">You've done the right thing by noting this. The next step is to book an appointment with your GP as soon as possible — ideally this week.</p>
+      </div>
+      <div class="card-concern" style="width:100%;text-align:left;">
+        <div style="font-weight:600;margin-bottom:8px;font-size:.9375rem;">What to say when you call</div>
+        <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">You don't need to have all the answers. Just say:<br><br><em>"I did a self-check and noticed something that felt different. I'd like to have it looked at."</em><br><br>Your GP has heard this before and will know exactly what to do.</p>
+        <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px;line-height:1.5;">Most lumps and changes are not cancer. But the only way to know is to get it checked — and early investigation leads to the best outcomes.</p>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="showScreen('resources')">View resources →</button>
+        <button class="btn btn-secondary" onclick="showScreen('home')">Back to home</button>
+      </div>
+    `;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════════════════
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!records.length) {
+    list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--text-muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">📋</div>
+      <p>No checks recorded yet.<br>Complete your first one today.</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = records.map(r => `
+    <div class="history-item" style="cursor:default;">
+      <div class="status-dot ${r.finding}"></div>
+      <div class="history-info">
+        <div class="history-type">${r.type === 'testis' ? 'Testicular' : 'Breast'} check</div>
+        <div class="history-date">${fmtDate(new Date(r.date))}</div>
+        ${r.notes ? `<div class="history-notes">${r.notes}</div>` : ''}
+      </div>
+      <span class="pill ${r.finding==='clear'?'pill-sage':r.finding==='unsure'?'pill-amber':'pill-terracotta'}">${r.finding==='clear'?'Clear':r.finding==='unsure'?'Unsure':'Concern'}</span>
+      <button onclick="deleteRecord('${r.id}')" aria-label="Delete record" style="background:none;border:none;cursor:pointer;padding:6px;margin-left:4px;flex-shrink:0;-webkit-tap-highlight-color:transparent;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.75" style="display:block;"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function deleteRecord(id) {
+  showConfirmModal(
+    'Delete this record?',
+    'This check will be permanently removed from your history.',
+    'Delete',
+    function() {
+      records = records.filter(r => r.id !== id);
+      saveRecords();
+      renderHistory();
+      showToast('Record deleted');
+    },
+    true
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEARN
+// ═══════════════════════════════════════════════════════
+
+function setLearnTab(tab, btn) {
+  currentLearnTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderArticleList();
+}
+
+function renderArticleList() {
+  const arts = ARTICLES[currentLearnTab];
+  const list = document.getElementById('article-list');
+  if (!list) return;
+  list.innerHTML = arts.map(a => `
+    <div class="article-card" onclick="openArticle('${a.id}')">
+      <div class="article-meta">
+        <span class="article-tag ${currentLearnTab==='breast'?'breast':''}">${a.tag}</span>
+        <span class="article-readtime">📖 ${a.readtime}</span>
+      </div>
+      <div class="article-title">${a.title}</div>
+      <div class="article-preview">${a.preview}</div>
+    </div>
+  `).join('');
+}
+
+function openArticle(id) {
+  const all = [...ARTICLES.testis, ...ARTICLES.breast];
+  const art = all.find(a => a.id === id);
+  if (!art) return;
+
+  document.getElementById('article-title').innerHTML = `<em>${art.title}</em>`;
+
+  if (!badges.articlesRead.includes(id)) {
+    badges.articlesRead.push(id);
+    saveBadges();
+    const totalArts = ARTICLES.testis.length + ARTICLES.breast.length;
+    if (badges.articlesRead.length >= totalArts) awardBadge('informed');
+  }
+
+  let content = '';
+  art.content.forEach(block => {
+    if (block.type === 'p')       content += `<p class="article-body">${block.text}</p>`;
+    if (block.type === 'heading') content += `<h3 style="color:var(--text-primary);">${block.text}</h3>`;
+    if (block.type === 'ul')      content += `<div class="article-body"><ul>${block.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+    if (block.type === 'cite')    content += `<div class="citation">${block.text}</div>`;
+    if (block.type === 'myth')    content += `
+      <div class="myth-item">
+        <div class="myth-label myth">✗ Myth</div>
+        <p class="article-body" style="margin-bottom:6px;">${block.myth}</p>
+        <div class="myth-label fact">✓ Fact</div>
+        <p class="article-body">${block.fact}</p>
+      </div>
+    `;
+  });
+  content += `<div style="height:8px;"></div>
+    <button class="btn btn-secondary" onclick="showScreen('resources')" style="width:100%;">Still unsure? View resources →</button>`;
+
+  document.getElementById('article-content').innerHTML = content;
+  showScreen('article');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROFILE — FIX 1: Custom modal editing (no more prompt/alert/confirm)
+// ═══════════════════════════════════════════════════════
+
+function renderProfile() {
+  if (!profile) return;
+  const checks = (profile.checksEnabled||[]).map(c => c==='testis'?'Testicular':'Breast').join(' & ');
+  const freqLabels = {monthly:'Monthly',bimonthly:'Every 2 months',quarterly:'Quarterly',off:'Off','cycle-based':'Cycle-based'};
+
+  document.getElementById('profile-wrap').innerHTML = `
+    <div class="settings-section">
+      <div class="settings-section-label">Personal</div>
+      <div class="settings-row" onclick="editName()">
+        <div class="settings-row-label">Name</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.name}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+      <div class="settings-row" onclick="editAge()">
+        <div class="settings-row-label">Age</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.age || 'Not set'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+      <div class="settings-row" onclick="editChecks()">
+        <div class="settings-row-label">Checks enabled</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${checks}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-label">Reminders</div>
+      <div class="settings-row" onclick="editFrequency()">
+        <div class="settings-row-label">Reminder frequency</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${freqLabels[profile.reminderFrequency]||'Monthly'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+      ${(profile.checksEnabled||[]).includes('breast') ? `
+      <div class="settings-row" onclick="showScreen('cycle')">
+        <div class="settings-row-label">Cycle settings</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.cycleTracking?.enabled ? 'Active' : 'Not set'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>` : ''}
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:.8125rem;color:var(--text-muted);line-height:1.5;margin-bottom:2px;">Set up a reminder so you never miss a check.</div>
+        <button class="btn btn-secondary" onclick="downloadCalendarReminder()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Add to Calendar
+        </button>
+        <button class="btn btn-secondary" id="notif-btn" onclick="toggleNotifications()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="notif-btn-label">${profile.notificationsEnabled ? 'Notifications on ✓' : 'Enable Notifications'}</span>
+        </button>
+        <div id="notif-status" style="font-size:.8rem;color:var(--tbc-sage-dark);display:none;line-height:1.5;"></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-label">Achievements</div>
+      <div class="settings-row" onclick="showScreen('badges')">
+        <div class="settings-row-label">Badges</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${badges.earned.length} of ${BADGES_DEF.length}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-label">App</div>
+      <div class="settings-row" onclick="showScreen('about')">
+        <div class="settings-row-label">About & disclaimer</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+      </div>
+      <div class="settings-row settings-row-danger" onclick="confirmReset()">
+        <div class="settings-row-label">Clear all data</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--tbc-terracotta)"><polyline points="9,18 15,12 9,6"/></svg>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:8px 0;font-size:.75rem;color:var(--text-muted);">TBC Version 1.0 · All data stored on this device only.</div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  REMINDERS — CALENDAR + NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+
+function getNextCheckDate() {
+  const freq = profile?.reminderFrequency || 'monthly';
+  const lastRecord = records[0];
+  let start;
+  if (freq === 'cycle-based' && profile?.cycleTracking?.nextReminderDate) {
+    return new Date(profile.cycleTracking.nextReminderDate);
+  }
+  start = lastRecord ? new Date(lastRecord.date) : new Date();
+  const daysMap = { monthly: 30, bimonthly: 60, quarterly: 91 };
+  const days = daysMap[freq] || 30;
+  const next = new Date(start.getTime() + days * 86400000);
+  return next < new Date() ? new Date(Date.now() + days * 86400000) : next;
+}
+
+function formatICSDate(date) {
+  const pad = n => String(n).padStart(2,'0');
+  return `${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}T090000`;
+}
+
+function getRRULE() {
+  const freq = profile?.reminderFrequency || 'monthly';
+  if (freq === 'bimonthly') return 'RRULE:FREQ=MONTHLY;INTERVAL=2';
+  if (freq === 'quarterly')  return 'RRULE:FREQ=MONTHLY;INTERVAL=3';
+  return 'RRULE:FREQ=MONTHLY';
+}
+
+function downloadCalendarReminder() {
+  const checks  = (profile?.checksEnabled || ['testis']).map(c => c==='testis'?'Testicular':'Breast').join(' & ');
+  const nextDate = getNextCheckDate();
+  const dtstart  = formatICSDate(nextDate);
+  const dtstamp  = formatICSDate(new Date());
+  const uid      = 'tbc-reminder-' + Date.now() + '@tbc-app';
+  const rrule    = getRRULE();
+  const ics = [
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TBC Health App//EN',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
+    'UID:'+uid,'DTSTAMP:'+dtstamp,'DTSTART:'+dtstart,rrule,
+    'SUMMARY:TBC \u2014 '+checks+' Self-Check',
+    'DESCRIPTION:Time for your '+checks.toLowerCase()+' self-check.\\n\\nOpen the TBC app to get started. Takes about 5 minutes.',
+    'BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY',
+    'DESCRIPTION:Time for your '+checks.toLowerCase()+' self-check',
+    'END:VALARM','END:VEVENT','END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'TBC-self-check-reminder.ics';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('📅 Calendar file downloaded — open it to add the reminder.');
+}
+
+async function toggleNotifications() {
+  if (!('Notification' in window)) {
+    showToast('Browser notifications are not supported on this device. Use "Add to Calendar" instead.', true);
+    return;
+  }
+  if (profile.notificationsEnabled) {
+    profile.notificationsEnabled = false;
+    saveProfile(); renderProfile();
+    return;
+  }
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    profile.notificationsEnabled = true;
+    profile.notificationsLastPrompt = new Date().toISOString();
+    saveProfile(); renderProfile();
+    const checks = (profile?.checksEnabled||['testis']).map(c=>c==='testis'?'Testicular':'Breast').join(' & ');
+    const next   = getNextCheckDate();
+    new Notification('TBC reminders are set \u2713', {
+      body: "We'll remind you for your "+checks.toLowerCase()+" check on "+next.toLocaleDateString('en-AU',{day:'numeric',month:'long'})+"."
+    });
+  } else if (permission === 'denied') {
+    showToast('Notifications were blocked. Check your browser settings or use "Add to Calendar" instead.', true);
+  }
+}
+
+function showNotifStatus(id, msg, positive) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.color   = positive ? 'var(--tbc-sage-dark)' : 'var(--text-muted)';
+  el.textContent   = msg;
+}
+
+function checkAndFireReminder() {
+  if (!profile?.notificationsEnabled) return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const nextDate = getNextCheckDate();
+  const today    = new Date().toDateString();
+  if (nextDate.toDateString() === today && profile.lastNotificationDate !== today) {
+    profile.lastNotificationDate = today;
+    saveProfile();
+    const checks = (profile?.checksEnabled||['testis']).map(c=>c==='testis'?'Testicular':'Breast').join(' & ');
+    new Notification('TBC \u2014 Time for your '+checks+' check', {
+      body: 'Open TBC to start your self-check. It only takes 5 minutes.'
+    });
+  }
+}
+
+// FIX 1: Custom modal-based profile editing (replaces prompt/alert/confirm)
+
+function editName() {
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Edit name</h2>
+    <div class="input-group">
+      <label class="label">What should we call you?</label>
+      <input type="text" id="edit-name-input" value="${profile.name}" placeholder="Your name">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditName()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveEditName() {
+  const val = document.getElementById('edit-name-input').value.trim();
+  if (val) {
+    profile.name = val;
+    saveProfile();
+    closeEditModal();
+    renderProfile();
+    showToast('Name updated ✓');
+  }
+}
+
+function editAge() {
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Edit age</h2>
+    <div class="input-group">
+      <label class="label">How old are you?</label>
+      <input type="number" id="edit-age-input" value="${profile.age || ''}" placeholder="Your age" min="1" max="120">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditAge()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveEditAge() {
+  const val = parseInt(document.getElementById('edit-age-input').value);
+  if (val && val > 0) {
+    profile.age = val;
+    saveProfile();
+    closeEditModal();
+    renderProfile();
+    showToast('Age updated ✓');
+  }
+}
+
+function editChecks() {
+  const cur = profile.checksEnabled || ['testis','breast'];
+  const isTestis = cur.includes('testis');
+  const isBreast = cur.includes('breast');
+  const curVal = (isTestis && isBreast) ? 'both' : isTestis ? 'testis' : 'breast';
+
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Edit checks</h2>
+    <p class="body" style="margin-bottom:16px;">Which checks apply to you?</p>
+    <div class="option-list" id="edit-checks-list">
+      ${['testis','breast','both'].map(v => {
+        const labels = {testis:'Testicular check',breast:'Breast check',both:'Both checks'};
+        return `<div class="option-item ${curVal===v?'selected':''}" onclick="selectEditCheck('${v}',this)">
+          <div class="option-radio"></div>
+          <div class="option-label">${labels[v]}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditChecks()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+let editCheckSelection = null;
+
+function selectEditCheck(v, el) {
+  editCheckSelection = v;
+  document.querySelectorAll('#edit-checks-list .option-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveEditChecks() {
+  if (!editCheckSelection) { closeEditModal(); return; }
+  profile.checksEnabled = editCheckSelection === 'both' ? ['testis','breast'] : [editCheckSelection];
+  editCheckSelection = null;
+  saveProfile();
+  closeEditModal();
+  renderProfile();
+  showToast('Checks updated ✓');
+}
+
+function editFrequency() {
+  const cur = profile.reminderFrequency || 'monthly';
+  const opts = [['monthly','Monthly'],['bimonthly','Every 2 months'],['quarterly','Quarterly'],['off',"I'll remember myself"],['cycle-based','Cycle-based']];
+
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Reminder frequency</h2>
+    <div class="option-list" id="edit-freq-list">
+      ${opts.map(([v,l]) =>
+        `<div class="option-item ${cur===v?'selected':''}" onclick="selectEditFreq('${v}',this)">
+          <div class="option-radio"></div>
+          <div class="option-label">${l}${v==='monthly'?' <span class="pill pill-sage" style="font-size:.65rem;vertical-align:middle;">Recommended</span>':''}</div>
+        </div>`
+      ).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditFreq()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+let editFreqSelection = null;
+
+function selectEditFreq(v, el) {
+  editFreqSelection = v;
+  document.querySelectorAll('#edit-freq-list .option-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveEditFreq() {
+  if (!editFreqSelection) { closeEditModal(); return; }
+  profile.reminderFrequency = editFreqSelection;
+  editFreqSelection = null;
+  saveProfile();
+  closeEditModal();
+  renderProfile();
+  showToast('Reminder frequency updated ✓');
+}
+
+// FIX 1: confirmReset uses custom confirm modal
+function confirmReset() {
+  showConfirmModal(
+    'Clear all data?',
+    'This will delete all your records, profile, and badges. This cannot be undone.',
+    'Yes, clear everything',
+    function() { localStorage.clear(); window.location.reload(); },
+    true
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGES
+// ═══════════════════════════════════════════════════════
+
+function renderBadges() {
+  const grid = document.getElementById('badge-grid');
+  grid.innerHTML = BADGES_DEF.map(b => {
+    const earned = badges.earned.some(e => e.id === b.id);
+    return `<div class="badge-tile" onclick="showBadgeModal('${b.id}')">
+      <div class="badge-icon ${earned ? '' : 'locked'}">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function showBadgeModal(id) {
+  const b = BADGES_DEF.find(x => x.id === id);
+  if (!b) return;
+  const earned = badges.earned.find(e => e.id === id);
+  const earnedAt = earned ? new Date(earned.earnedAt) : null;
+  document.getElementById('badge-modal-content').innerHTML = `
+    <div style="font-size:4rem;margin-bottom:12px;">${b.icon}</div>
+    <h2 style="margin-bottom:8px;">${b.name}</h2>
+    <p class="body" style="margin-bottom:12px;">${b.desc}</p>
+    ${earned
+      ? `<span class="pill pill-sage">Earned ${fmtDate(earnedAt)}</span>`
+      : `<div style="background:var(--bg-raised);border-radius:var(--radius-md);padding:10px 14px;font-size:.875rem;color:var(--text-muted);">🔒 ${b.unlock}</div>`
+    }
+    <button class="btn btn-ghost" style="margin-top:16px;width:100%;" onclick="closeBadgeModal()">Close</button>
+  `;
+  document.getElementById('badge-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBadgeModal(e) {
+  if (!e || e.target === document.getElementById('badge-modal')) {
+    document.getElementById('badge-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+function checkAndAwardBadges(record) {
+  const totalChecks = records.length;
+  if (totalChecks === 1)  awardBadge('first_step');
+  if (totalChecks === 3)  awardBadge('getting_reg');
+  if (totalChecks === 6)  awardBadge('committed');
+  if (totalChecks === 12) awardBadge('champion');
+  if (totalChecks === 24) awardBadge('dedicated');
+  if (record.finding !== 'clear') awardBadge('brave');
+
+  if (records.length >= 2) {
+    const prev = records[1];
+    if (prev.finding !== 'clear') awardBadge('follow_thru');
+  }
+
+  const types = new Set(records.map(r => r.type));
+  if (types.has('testis') && types.has('breast')) awardBadge('know_body');
+
+  if (profile.onboardingDate) {
+    const daysSince = (Date.now() - new Date(profile.onboardingDate)) / 86400000;
+    if (daysSince >= 365) awardBadge('one_year');
+    if (daysSince >= 730) awardBadge('two_year');
+  }
+}
+
+function awardBadge(id) {
+  if (badges.earned.some(e => e.id === id)) return;
+  badges.earned.push({ id, earnedAt: new Date().toISOString() });
+  saveBadges();
+  pendingBadge = BADGES_DEF.find(b => b.id === id);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CYCLE SETTINGS — FIX 1: toast instead of alert
+// ═══════════════════════════════════════════════════════
+
+function initCycleScreen() {
+  const ct = profile?.cycleTracking;
+  if (ct) {
+    if (ct.lastPeriodStart) document.getElementById('cycle-start').value = ct.lastPeriodStart.split('T')[0];
+    if (ct.averageCycleLength) document.getElementById('cycle-length').value = ct.averageCycleLength;
+    if (ct.averagePeriodDuration) document.getElementById('cycle-duration').value = ct.averagePeriodDuration;
+  }
+  updateCyclePreview();
+}
+
+function updateCyclePreview() {
+  const start = document.getElementById('cycle-start')?.value;
+  const len   = parseInt(document.getElementById('cycle-length')?.value);
+  const dur   = parseInt(document.getElementById('cycle-duration')?.value);
+  const pre   = document.getElementById('cycle-preview');
+  const warn  = document.getElementById('cycle-warning');
+  if (!pre) return;
+
+  if (start && len && dur) {
+    const d = calcNextReminder(start, len, dur);
+    pre.style.display = 'block';
+    pre.innerHTML = `<div class="cycle-preview-date">📅 Next reminder: ${fmtDate(d)}</div><div class="cycle-preview-note">About 3 days after your next estimated period ends — the ideal time to check.</div>`;
+    if (warn) warn.style.display = (len < 21 || len > 35) ? 'block' : 'none';
+  } else {
+    pre.style.display = 'none';
+    if (warn) warn.style.display = 'none';
+  }
+}
+
+function saveCycleSettings() {
+  const start = document.getElementById('cycle-start').value;
+  const len   = parseInt(document.getElementById('cycle-length').value) || 28;
+  const dur   = parseInt(document.getElementById('cycle-duration').value) || 5;
+  if (!start) {
+    showToast('Please enter your last period start date.', true);
+    return;
+  }
+  profile.cycleTracking = {
+    enabled: true,
+    lastPeriodStart: start,
+    averageCycleLength: len,
+    averagePeriodDuration: dur,
+    nextReminderDate: calcNextReminder(start, len, dur).toISOString(),
+  };
+  profile.reminderFrequency = 'cycle-based';
+  saveProfile();
+  showToast(`✓ Saved. Next reminder: ${fmtDate(calcNextReminder(start, len, dur))}`);
+  showScreen('profile');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+
+function calcNextReminder(startStr, cycleLen, periodDur) {
+  const start   = new Date(startStr);
+  const today   = new Date();
+  let next = new Date(start);
+  while (next <= today) next = new Date(next.getTime() + cycleLen * 86400000);
+  const periodEnd = new Date(next.getTime() + periodDur * 86400000);
+  return new Date(periodEnd.getTime() + 3 * 86400000);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function saveProfile() { localStorage.setItem('tbc_profile', JSON.stringify(profile)); }
+function saveRecords() { localStorage.setItem('tbc_records', JSON.stringify(records)); }
+function saveBadges()  { localStorage.setItem('tbc_badges',  JSON.stringify(badges)); }
+
+// ═══════════════════════════════════════════════════════
+//  PWA — SERVICE WORKER (offline support)
+// ═══════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE_NAME = 'tbc-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(['./', self.location.href.replace(/\\/sw\\.js.*/, '')]))
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(
+        caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      );
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./')))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).catch(() => {});
+}
+</script>
+</body>
+</html>
