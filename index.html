@@ -2478,6 +2478,31 @@ function renderProfile() {
     </div>
 
     <div class="settings-section">
+      <div class="settings-section-label">Your GP</div>
+      <div class="settings-row" onclick="editGpClinic()">
+        <div class="settings-row-label">Clinic name</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.gp?.clinicName || 'Not set'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+      <div class="settings-row" onclick="editGpDoctor()">
+        <div class="settings-row-label">Doctor's name</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.gp?.doctorName || 'Not set'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+      <div class="settings-row" onclick="editGpBooking()">
+        <div class="settings-row-label">Booking link</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="settings-row-value">${profile.gp?.bookingUrl ? 'Saved ✓' : 'Not set'}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9,18 15,12 9,6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-section-label">Reminders</div>
       <div class="settings-row" onclick="editFrequency()">
         <div class="settings-row-label">Reminder frequency</div>
@@ -2689,6 +2714,78 @@ function saveEditAge() {
     renderProfile();
     showToast('Age updated ✓');
   }
+}
+
+function editGpClinic() {
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Edit clinic name</h2>
+    <div class="input-group">
+      <label class="label">Your GP clinic</label>
+      <input type="text" id="edit-gp-clinic" value="${profile.gp?.clinicName || ''}" placeholder="e.g. Collins Street Medical Centre">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditGpClinic()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveEditGpClinic() {
+  const val = document.getElementById('edit-gp-clinic').value.trim();
+  profile.gp = profile.gp || {};
+  profile.gp.clinicName = val;
+  saveProfile();
+  closeEditModal();
+  renderProfile();
+  showToast('Clinic updated ✓');
+}
+
+function editGpDoctor() {
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Edit doctor's name</h2>
+    <div class="input-group">
+      <label class="label">Your doctor (optional)</label>
+      <input type="text" id="edit-gp-doctor" value="${profile.gp?.doctorName || ''}" placeholder="e.g. Dr Sarah Chen">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditGpDoctor()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveEditGpDoctor() {
+  const val = document.getElementById('edit-gp-doctor').value.trim();
+  profile.gp = profile.gp || {};
+  profile.gp.doctorName = val;
+  saveProfile();
+  closeEditModal();
+  renderProfile();
+  showToast('Doctor updated ✓');
+}
+
+function editGpBooking() {
+  showEditModal(`
+    <h2 style="margin-bottom:16px;">Booking link</h2>
+    <p class="body" style="margin-bottom:16px;">Paste your clinic's online booking URL (e.g. from HotDoc or HealthEngine). If you don't add one, we'll search Google for you.</p>
+    <div class="input-group">
+      <input type="text" id="edit-gp-booking" value="${profile.gp?.bookingUrl || ''}" placeholder="https://www.hotdoc.com.au/...">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditGpBooking()">Save</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveEditGpBooking() {
+  const val = document.getElementById('edit-gp-booking').value.trim();
+  profile.gp = profile.gp || {};
+  profile.gp.bookingUrl = val;
+  saveProfile();
+  closeEditModal();
+  renderProfile();
+  showToast('Booking link updated ✓');
 }
 
 function editChecks() {
