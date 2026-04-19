@@ -2325,9 +2325,10 @@ function renderResultScreen(record) {
         ? `Book with ${doctorName} at ${clinicName}.`
         : `Book with ${clinicName}.`;
       const bookingUrlRaw = profile.gp.bookingUrl && String(profile.gp.bookingUrl).trim();
+      const hrefEscape = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
       const primaryBtn = bookingUrlRaw
-        ? `<button class="btn btn-primary" style="margin-top:14px;" onclick="window.open(${JSON.stringify(bookingUrlRaw)},'_blank')">Open booking page →</button>`
-        : `<button class="btn btn-primary" style="margin-top:14px;" onclick="window.open(${JSON.stringify('https://www.google.com/search?q=' + encodeURIComponent(clinicName + ' book appointment online'))},'_blank')">Search for booking options →</button>`;
+        ? `<a href="${hrefEscape(String(profile.gp.bookingUrl).trim())}" target="_blank" class="btn btn-primary" style="margin-top:14px;text-decoration:none;">Open booking page →</a>`
+        : `<a href="https://www.google.com/search?q=${encodeURIComponent(profile.gp.clinicName + ' book appointment online')}" target="_blank" class="btn btn-primary" style="margin-top:14px;text-decoration:none;">Search for booking options →</a>`;
       gpBookingBlock = `
       <div class="card" style="width:100%;text-align:left;">
         <h3>Book your appointment</h3>
