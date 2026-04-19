@@ -1746,7 +1746,7 @@ window.addEventListener('DOMContentLoaded', () => {
 //  ONBOARDING
 // ═══════════════════════════════════════════════════════
 
-const ONBOARD_STEPS_BASE = ['welcome','name','age','checks','frequency','disclaimer'];
+const ONBOARD_STEPS_BASE = ['welcome','name','age','checks','frequency','gp-details','disclaimer'];
 
 function getOnboardSteps() {
   const base = ['welcome','name','age','checks','frequency'];
@@ -1755,6 +1755,7 @@ function getOnboardSteps() {
     base.push('cycle-opt');
     if (onboardData.cycleOpt === 'yes') base.push('cycle-detail');
   }
+  base.push('gp-details');
   base.push('disclaimer');
   return base;
 }
@@ -1911,6 +1912,30 @@ function renderOnboardStep() {
       break;
     }
 
+    case 'gp-details':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">Do you have a regular GP?</h1>
+        <p class="body" style="margin-bottom:24px;">If you notice a change, we'll remind you to book with them. You can skip this and add it later in your profile.</p>
+        <div class="stack stack-md">
+          <div class="input-group">
+            <label class="label" for="ob-gp-clinic">Clinic name</label>
+            <input type="text" id="ob-gp-clinic" placeholder="e.g. Collins Street Medical Centre" value="${onboardData.gpClinic||''}"
+              oninput="onboardData.gpClinic=this.value">
+          </div>
+          <div class="input-group">
+            <label class="label" for="ob-gp-doctor">Your doctor's name (optional)</label>
+            <input type="text" id="ob-gp-doctor" placeholder="e.g. Dr Sarah Chen" value="${onboardData.gpDoctor||''}"
+              oninput="onboardData.gpDoctor=this.value">
+          </div>
+        </div>
+      `;
+      footer.innerHTML = `
+        <button class="btn btn-primary" id="ob-next-btn" onclick="onboardNext()">Next →</button>
+        <button class="btn btn-ghost" onclick="onboardNext()">Skip for now</button>
+        ${onboardStep > 0 ? `<button class="btn btn-ghost" onclick="onboardBack()">← Back</button>` : ''}
+      `;
+      break;
+
     case 'disclaimer':
       body.innerHTML = `
         <h1 style="margin-bottom:16px;">Before we begin.</h1>
@@ -2009,6 +2034,11 @@ function onboardFinish() {
       averageCycleLength: parseInt(onboardData.cycleLen) || 28,
       averagePeriodDuration: parseInt(onboardData.cycleDur) || 5,
       nextReminderDate: hasCycle ? calcNextReminder(onboardData.cycleStart, parseInt(onboardData.cycleLen), parseInt(onboardData.cycleDur)).toISOString() : null,
+    },
+    gp: {
+      clinicName: onboardData.gpClinic?.trim() || null,
+      doctorName: onboardData.gpDoctor?.trim() || null,
+      bookingUrl: null,
     },
     disclaimerAccepted: true,
     disclaimerAcceptedAt: new Date().toISOString(),
