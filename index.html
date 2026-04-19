@@ -1746,10 +1746,13 @@ window.addEventListener('DOMContentLoaded', () => {
 //  ONBOARDING
 // ═══════════════════════════════════════════════════════
 
-const ONBOARD_STEPS_BASE = ['welcome','name','age','checks','frequency','gp-details','disclaimer'];
+const ONBOARD_STEPS_BASE = ['welcome','name','age','checks','frequency','calendar-prompt','gp-details','disclaimer'];
 
 function getOnboardSteps() {
   const base = ['welcome','name','age','checks','frequency'];
+  if (onboardData.frequency && onboardData.frequency !== 'off') {
+    base.push('calendar-prompt');
+  }
   const checks = onboardData.checksEnabled || [];
   if (checks.includes('breast')) {
     base.push('cycle-opt');
@@ -1860,6 +1863,19 @@ function renderOnboardStep() {
         </div>
       `;
       footer.innerHTML = renderNext('Next →', !onboardData.frequency);
+      break;
+
+    case 'calendar-prompt':
+      body.innerHTML = `
+        <h1 style="margin-bottom:8px;">Add it to your calendar?</h1>
+        <p class="body" style="margin-bottom:24px;">We'll create a discreet recurring reminder called 'TBC check-in' — no details visible to anyone who sees your calendar. It'll repeat for the next 12 months based on your chosen frequency.</p>
+        <div class="card-tip" style="border-radius:var(--radius-md);">🔒 The calendar event just says 'TBC check-in' — nothing about what the check is for.</div>
+      `;
+      footer.innerHTML = `
+        <button class="btn btn-primary" onclick="onboardCalendarDownload()">Add to calendar 📅</button>
+        <button class="btn btn-ghost" onclick="onboardNext()">Skip for now</button>
+        ${onboardStep > 0 ? `<button class="btn btn-ghost" onclick="onboardBack()">← Back</button>` : ''}
+      `;
       break;
 
     case 'cycle-opt':
@@ -2006,6 +2022,19 @@ function checkCycleFields() {
   const len   = document.getElementById('ob-cycle-len')?.value;
   const dur   = document.getElementById('ob-cycle-dur')?.value;
   btn.disabled = !(start && len && dur);
+}
+
+function onboardCalendarDownload() {
+  if (!profile) {
+    profile = {
+      reminderFrequency: onboardData.frequency,
+      checksEnabled: onboardData.checksEnabled || ['testis', 'breast'],
+    };
+  } else {
+    profile.reminderFrequency = onboardData.frequency;
+  }
+  downloadCalendarReminder();
+  onboardNext();
 }
 
 function onboardNext() {
@@ -2613,13 +2642,13 @@ function formatICSDate(date) {
 
 function getRRULE() {
   const freq = profile?.reminderFrequency || 'monthly';
-  if (freq === 'bimonthly') return 'RRULE:FREQ=MONTHLY;INTERVAL=2';
-  if (freq === 'quarterly')  return 'RRULE:FREQ=MONTHLY;INTERVAL=3';
-  return 'RRULE:FREQ=MONTHLY';
+  if (freq === 'bimonthly') return 'RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=6';
+  if (freq === 'quarterly')  return 'RRULE:FREQ=MONTHLY;INTERVAL=3;COUNT=4';
+  if (freq === 'cycle-based') return 'RRULE:FREQ=MONTHLY;COUNT=12';
+  return 'RRULE:FREQ=MONTHLY;COUNT=12';
 }
 
 function downloadCalendarReminder() {
-  const checks  = (profile?.checksEnabled || ['testis']).map(c => c==='testis'?'Testicular':'Breast').join(' & ');
   const nextDate = getNextCheckDate();
   const dtstart  = formatICSDate(nextDate);
   const dtstamp  = formatICSDate(new Date());
@@ -2629,10 +2658,10 @@ function downloadCalendarReminder() {
     'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TBC Health App//EN',
     'CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
     'UID:'+uid,'DTSTAMP:'+dtstamp,'DTSTART:'+dtstart,rrule,
-    'SUMMARY:TBC \u2014 '+checks+' Self-Check',
-    'DESCRIPTION:Time for your '+checks.toLowerCase()+' self-check.\\n\\nOpen the TBC app to get started. Takes about 5 minutes.',
+    'SUMMARY:TBC check-in',
+    'DESCRIPTION:Time for your monthly self-check.\\n\\nOpen the TBC app to get started.',
     'BEGIN:VALARM','TRIGGER:-PT0M','ACTION:DISPLAY',
-    'DESCRIPTION:Time for your '+checks.toLowerCase()+' self-check',
+    'DESCRIPTION:TBC check-in',
     'END:VALARM','END:VEVENT','END:VCALENDAR'
   ].join('\r\n');
   const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
