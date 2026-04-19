@@ -2316,6 +2316,32 @@ function renderResultScreen(record) {
       </div>
     `;
   } else {
+    const hasGpDetails = profile?.gp && profile.gp.clinicName;
+    let gpBookingBlock = '';
+    if (hasGpDetails) {
+      const clinicName = profile.gp.clinicName;
+      const doctorName = profile.gp.doctorName;
+      const paraText = doctorName
+        ? `Book with ${doctorName} at ${clinicName}.`
+        : `Book with ${clinicName}.`;
+      const bookingUrlRaw = profile.gp.bookingUrl && String(profile.gp.bookingUrl).trim();
+      const primaryBtn = bookingUrlRaw
+        ? `<button class="btn btn-primary" style="margin-top:14px;" onclick="window.open(${JSON.stringify(bookingUrlRaw)},'_blank')">Open booking page →</button>`
+        : `<button class="btn btn-primary" style="margin-top:14px;" onclick="window.open(${JSON.stringify('https://www.google.com/search?q=' + encodeURIComponent(clinicName + ' book appointment online'))},'_blank')">Search for booking options →</button>`;
+      gpBookingBlock = `
+      <div class="card" style="width:100%;text-align:left;">
+        <h3>Book your appointment</h3>
+        <p class="body" style="margin-top:8px;">${paraText}</p>
+        ${primaryBtn}
+      </div>`;
+    } else {
+      gpBookingBlock = `
+      <div class="card" style="width:100%;text-align:left;">
+        <h3>Got a regular GP?</h3>
+        <p class="body" style="margin-top:8px;">Add your GP details so we can help you book quickly next time.</p>
+        <button class="btn btn-secondary" style="margin-top:14px;" onclick="showScreen('profile')">Add GP details →</button>
+      </div>`;
+    }
     wrap.innerHTML = `
       <div class="result-icon-wrap concern confirm-icon">⚠️</div>
       <div style="text-align:center;">
@@ -2327,6 +2353,7 @@ function renderResultScreen(record) {
         <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">You don't need to have all the answers. Just say:<br><br><em>"I did a self-check and noticed something that felt different. I'd like to have it looked at."</em><br><br>Your GP has heard this before and will know exactly what to do.</p>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px;line-height:1.5;">Most lumps and changes are not cancer. But the only way to know is to get it checked — and early investigation leads to the best outcomes.</p>
       </div>
+      ${gpBookingBlock}
       <div class="result-actions">
         <button class="btn btn-primary" onclick="showScreen('resources')">View resources →</button>
         <button class="btn btn-secondary" onclick="showScreen('home')">Back to home</button>
