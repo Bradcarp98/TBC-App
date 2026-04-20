@@ -805,6 +805,7 @@ h1[tabindex="-1"]:focus { outline: none; }
 }
 
 /* Result */
+#screen-result .page-header .back-btn { margin-bottom: 0; }
 .result-wrap {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -1200,6 +1201,12 @@ h1[tabindex="-1"]:focus { outline: none; }
 
   <!-- ═══════════ RESULT ═══════════ -->
   <div id="screen-result" class="screen">
+    <div class="page-header">
+      <button class="back-btn" onclick="showScreen('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+    </div>
     <div class="result-wrap" id="result-wrap"></div>
   </div>
 
