@@ -2103,8 +2103,13 @@ function renderDashboard() {
   const daysUntil = nextDue ? Math.ceil((nextDue - new Date()) / 86400000) : null;
   let nextLabel, nextSub;
   if (daysUntil === null) {
-    nextLabel = "Time to check in.";
-    nextSub   = "You haven't set up a schedule yet.";
+    if (!records.length) {
+      nextLabel = "Ready for your first check?";
+      nextSub = "It only takes 5 minutes. Let's get started.";
+    } else {
+      nextLabel = "Time to check in.";
+      nextSub = "You haven't set up a schedule yet.";
+    }
   } else if (daysUntil < 0) {
     nextLabel = "Your check is overdue.";
     nextSub   = `Don't put it off — it only takes 5 minutes.`;
