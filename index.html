@@ -2339,6 +2339,13 @@ function renderResultScreen(record) {
   const wrap = document.getElementById('result-wrap');
   if (!isConcern) {
     const next = getNextDueDate();
+    const hasGpDetails = profile?.gp && profile.gp.clinicName;
+    const gpTipAllClear = !hasGpDetails
+      ? `<div class="card" style="width:100%;text-align:left;margin-top:4px;">
+  <p class="body" style="margin:0;">💡 <strong>Tip:</strong> Add your GP details in your profile so if you ever do notice a change, booking an appointment is one tap away.</p>
+  <button class="btn btn-secondary" style="margin-top:12px;" onclick="showScreen('profile')">Add GP details →</button>
+</div>`
+      : '';
     wrap.innerHTML = `
       <div class="result-icon-wrap clear confirm-icon">✅</div>
       <div style="text-align:center;">
@@ -2346,6 +2353,7 @@ function renderResultScreen(record) {
         <p class="body">Great work — no unusual changes recorded. Keep up the monthly checks and you'll always know what's normal for you.</p>
         ${next ? `<p style="margin-top:10px;font-size:.875rem;color:var(--tbc-sage);font-weight:500;">Next check due ${fmtDate(next)}.</p>` : ''}
       </div>
+      ${gpTipAllClear}
       <div class="result-actions">
         <button class="btn btn-primary" onclick="showScreen('home')">🏠 Back to home</button>
         <button class="btn btn-secondary" onclick="showScreen('history')">View history</button>
