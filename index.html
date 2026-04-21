@@ -1639,6 +1639,24 @@ function showToast(msg, isError) {
   el._timer = setTimeout(() => el.classList.remove('visible'), 3000);
 }
 
+function shareTBC() {
+  const shareData = {
+    title: 'TBC — Testis · Breast · Check',
+    text: 'A free self-check guide for breast and testicular health. 5 minutes a month that could change everything.',
+    url: window.location.href
+  };
+
+  if (navigator.share) {
+    navigator.share(shareData).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('Link copied to clipboard ✓');
+    }).catch(() => {
+      showToast('Copy this link: ' + window.location.href);
+    });
+  }
+}
+
 // ═══════════════════════════════════════════════════════
 //  EDIT MODAL SYSTEM (replaces prompt/confirm)
 // ═══════════════════════════════════════════════════════
@@ -2359,6 +2377,10 @@ function renderResultScreen(record) {
         ${next ? `<p style="margin-top:10px;font-size:.875rem;color:var(--tbc-sage);font-weight:500;">Next check due ${fmtDate(next)}.</p>` : ''}
       </div>
       ${gpTipAllClear}
+      <div class="card" style="width:100%;text-align:left;margin-top:4px;">
+        <p class="body" style="margin:0;">Think someone you know could benefit from this?</p>
+        <button class="btn btn-secondary" style="margin-top:12px;" onclick="shareTBC()">Share TBC →</button>
+      </div>
       <div class="result-actions">
         <button class="btn btn-primary" onclick="showScreen('home')">🏠 Back to home</button>
         <button class="btn btn-secondary" onclick="showScreen('history')">View history</button>
@@ -2794,6 +2816,7 @@ function saveEditAge() {
 }
 
 function editGpClinic() {
+  profile.gp = profile.gp || { clinicName: null, doctorName: null, bookingUrl: null };
   showEditModal(`
     <h2 style="margin-bottom:16px;">Edit clinic name</h2>
     <div class="input-group">
@@ -2818,6 +2841,7 @@ function saveEditGpClinic() {
 }
 
 function editGpDoctor() {
+  profile.gp = profile.gp || { clinicName: null, doctorName: null, bookingUrl: null };
   showEditModal(`
     <h2 style="margin-bottom:16px;">Edit doctor's name</h2>
     <div class="input-group">
@@ -2842,6 +2866,7 @@ function saveEditGpDoctor() {
 }
 
 function editGpBooking() {
+  profile.gp = profile.gp || { clinicName: null, doctorName: null, bookingUrl: null };
   showEditModal(`
     <h2 style="margin-bottom:16px;">Booking link</h2>
     <p class="body" style="margin-bottom:16px;">Paste your clinic's online booking URL (e.g. from HotDoc or HealthEngine). If you don't add one, we'll search Google for you.</p>
