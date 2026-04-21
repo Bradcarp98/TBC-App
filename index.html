@@ -2181,7 +2181,57 @@ function renderDashboard() {
       </div>
       ${lastRecord ? `
         <div class="history-item" onclick="showScreen('history')">
-          <div class="status-dot ${lastRecord.finding}"></div>
+          ${lastRecord.type === 'testis'
+            ? `<div style="width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+      <svg viewBox="0 0 64 64" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Warm amber circle background -->
+            <circle cx="32" cy="32" r="32" fill="#E8A834"/>
+            <!-- Shower head -->
+            <ellipse cx="18" cy="12" rx="8" ry="4" fill="#B0B8C0" stroke="#7A828A" stroke-width="1"/>
+            <rect x="8" y="11" width="6" height="3" rx="1.5" fill="#9CA4AC"/>
+            <line x1="8" y1="12.5" x2="4" y2="8" stroke="#9CA4AC" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Water drops -->
+            <g fill="rgba(255,255,255,.7)">
+              <ellipse cx="14" cy="20" rx="1" ry="2.5"/><ellipse cx="18" cy="22" rx="1" ry="2.5"/>
+              <ellipse cx="22" cy="20" rx="1" ry="2.5"/><ellipse cx="16" cy="26" rx="1" ry="2"/>
+              <ellipse cx="20" cy="28" rx="1" ry="2"/><ellipse cx="24" cy="25" rx="1" ry="2"/>
+            </g>
+            <!-- Pear body - single continuous shape with cleft at bottom -->
+            <path d="M36 20 Q33 26 30 30 Q26 35 24 42 Q23 48 25 52 Q27 55 30 56 Q33 57 35 54 Q36 52 37 54 Q39 57 42 56 Q45 55 47 52 Q49 48 48 42 Q46 35 42 30 Q39 26 36 20Z" fill="#C5A54A" stroke="#8B7A30" stroke-width="1.2"/>
+            <!-- Cleft shadow line -->
+            <path d="M36 42 Q36 48 36 54" stroke="#A08830" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".5"/>
+            <!-- Left side highlight -->
+            <path d="M29 34 Q27 42 28 50" stroke="rgba(255,255,255,.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Right side highlight -->
+            <path d="M43 34 Q44 42 43 50" stroke="rgba(255,255,255,.2)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <!-- Stem -->
+            <path d="M36 20 Q37 15 36 11" stroke="#6B5030" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Tiny leaf -->
+            <path d="M36 13 Q39 10 41 12 Q39 14 36 13Z" fill="#7A8E40" stroke="#5A6E28" stroke-width=".5"/>
+          </svg>
+    </div>`
+            : `<div style="width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+      <svg viewBox="0 0 64 64" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Soft pink circle background -->
+            <circle cx="32" cy="32" r="32" fill="#F2DDD4"/>
+            <!-- Left grapefruit half - moved left, no overlap -->
+            <circle cx="19" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="19" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="19" y1="24.5" x2="19" y2="43.5"/><line x1="11" y1="29" x2="27" y2="39"/>
+              <line x1="11" y1="39" x2="27" y2="29"/><line x1="9.5" y1="34" x2="28.5" y2="34"/>
+            </g>
+            <circle cx="19" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+            <!-- Right grapefruit half - moved right, no overlap -->
+            <circle cx="45" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="45" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="45" y1="24.5" x2="45" y2="43.5"/><line x1="37" y1="29" x2="53" y2="39"/>
+              <line x1="37" y1="39" x2="53" y2="29"/><line x1="35.5" y1="34" x2="54.5" y2="34"/>
+            </g>
+            <circle cx="45" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+          </svg>
+    </div>`}
           <div class="history-info">
             <div class="history-type">${lastRecord.type === 'testis' ? 'Testicular' : 'Breast'} check</div>
             <div class="history-date">${fmtDate(new Date(lastRecord.date))}</div>
@@ -2449,7 +2499,57 @@ function renderHistory() {
   }
   list.innerHTML = records.map(r => `
     <div class="history-item" style="cursor:default;">
-      <div class="status-dot ${r.finding}"></div>
+      ${r.type === 'testis'
+        ? `<div style="width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+      <svg viewBox="0 0 64 64" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Warm amber circle background -->
+            <circle cx="32" cy="32" r="32" fill="#E8A834"/>
+            <!-- Shower head -->
+            <ellipse cx="18" cy="12" rx="8" ry="4" fill="#B0B8C0" stroke="#7A828A" stroke-width="1"/>
+            <rect x="8" y="11" width="6" height="3" rx="1.5" fill="#9CA4AC"/>
+            <line x1="8" y1="12.5" x2="4" y2="8" stroke="#9CA4AC" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Water drops -->
+            <g fill="rgba(255,255,255,.7)">
+              <ellipse cx="14" cy="20" rx="1" ry="2.5"/><ellipse cx="18" cy="22" rx="1" ry="2.5"/>
+              <ellipse cx="22" cy="20" rx="1" ry="2.5"/><ellipse cx="16" cy="26" rx="1" ry="2"/>
+              <ellipse cx="20" cy="28" rx="1" ry="2"/><ellipse cx="24" cy="25" rx="1" ry="2"/>
+            </g>
+            <!-- Pear body - single continuous shape with cleft at bottom -->
+            <path d="M36 20 Q33 26 30 30 Q26 35 24 42 Q23 48 25 52 Q27 55 30 56 Q33 57 35 54 Q36 52 37 54 Q39 57 42 56 Q45 55 47 52 Q49 48 48 42 Q46 35 42 30 Q39 26 36 20Z" fill="#C5A54A" stroke="#8B7A30" stroke-width="1.2"/>
+            <!-- Cleft shadow line -->
+            <path d="M36 42 Q36 48 36 54" stroke="#A08830" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".5"/>
+            <!-- Left side highlight -->
+            <path d="M29 34 Q27 42 28 50" stroke="rgba(255,255,255,.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Right side highlight -->
+            <path d="M43 34 Q44 42 43 50" stroke="rgba(255,255,255,.2)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <!-- Stem -->
+            <path d="M36 20 Q37 15 36 11" stroke="#6B5030" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Tiny leaf -->
+            <path d="M36 13 Q39 10 41 12 Q39 14 36 13Z" fill="#7A8E40" stroke="#5A6E28" stroke-width=".5"/>
+          </svg>
+    </div>`
+        : `<div style="width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+      <svg viewBox="0 0 64 64" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Soft pink circle background -->
+            <circle cx="32" cy="32" r="32" fill="#F2DDD4"/>
+            <!-- Left grapefruit half - moved left, no overlap -->
+            <circle cx="19" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="19" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="19" y1="24.5" x2="19" y2="43.5"/><line x1="11" y1="29" x2="27" y2="39"/>
+              <line x1="11" y1="39" x2="27" y2="29"/><line x1="9.5" y1="34" x2="28.5" y2="34"/>
+            </g>
+            <circle cx="19" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+            <!-- Right grapefruit half - moved right, no overlap -->
+            <circle cx="45" cy="34" r="12" fill="#E8946A" stroke="#C06040" stroke-width="1"/>
+            <circle cx="45" cy="34" r="9.5" fill="#E84040" opacity=".7"/>
+            <g stroke="#D06050" stroke-width=".6" opacity=".5">
+              <line x1="45" y1="24.5" x2="45" y2="43.5"/><line x1="37" y1="29" x2="53" y2="39"/>
+              <line x1="37" y1="39" x2="53" y2="29"/><line x1="35.5" y1="34" x2="54.5" y2="34"/>
+            </g>
+            <circle cx="45" cy="34" r="2.5" fill="#F0C0A0" stroke="#D08060" stroke-width=".5"/>
+          </svg>
+    </div>`}
       <div class="history-info">
         <div class="history-type">${r.type === 'testis' ? 'Testicular' : 'Breast'} check</div>
         <div class="history-date">${fmtDate(new Date(r.date))}</div>
