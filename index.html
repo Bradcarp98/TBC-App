@@ -2599,6 +2599,7 @@ function renderArticleList() {
       <div class="article-meta">
         <span class="article-tag ${currentLearnTab==='breast'?'breast':''}">${a.tag}</span>
         <span class="article-readtime">📖 ${a.readtime}</span>
+        ${badges.articlesRead.includes(a.id) ? '<span class="pill pill-sage" style="font-size:.65rem;margin-left:auto;">Read ✓</span>' : ''}
       </div>
       <div class="article-title">${a.title}</div>
       <div class="article-preview">${a.preview}</div>
