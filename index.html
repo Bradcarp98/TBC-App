@@ -992,6 +992,7 @@ h1[tabindex="-1"]:focus { outline: none; }
 <meta name="description" content="A free self-check guide for breast and testicular health. 5 minutes a month that could change everything.">
 <!-- FIX 5: Inline SVG favicon -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236B9E7A'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='18' fill='white' font-weight='bold'%3ET%3C/text%3E%3C/svg%3E">
+<script defer src="https://cloud.umami.is/script.js" data-website-id="768a526a-0503-43fb-bf57-ab80e0b2efeb"></script>
 </head>
 <body>
 <div id="app">
@@ -1420,7 +1421,7 @@ h1[tabindex="-1"]:focus { outline: none; }
         <div class="card">
           <div style="font-size:.875rem;color:var(--text-muted);line-height:1.6;">
             <div>TBC is not affiliated with Cancer Council Australia or any health organisation.</div>
-            <div style="margin-top:8px;">All data is stored only on your device. Nothing is shared.</div>
+            <div style="margin-top:8px;">Your personal data — your name, your findings, your notes and your cycle details — is stored only on this device and is never uploaded. We use privacy-friendly, anonymous analytics (no cookies, no personal data) to understand how the app is used and improve it.</div>
             <div style="margin-top:8px;">Version 1.1 · Made with care.</div>
           </div>
         </div>
@@ -1626,6 +1627,14 @@ let onboardStep    = 0;
 let onboardData    = {};
 let pendingBadge   = null;
 
+function trackEvent(name, props) {
+  try {
+    if (window.umami && typeof window.umami.track === 'function') {
+      props ? window.umami.track(name, props) : window.umami.track(name);
+    }
+  } catch (e) { /* analytics must never break the app */ }
+}
+
 // ═══════════════════════════════════════════════════════
 //  TOAST SYSTEM (replaces alert)
 // ═══════════════════════════════════════════════════════
@@ -1777,6 +1786,7 @@ window.addEventListener('DOMContentLoaded', () => {
         onboardData = {};
         showScreen('onboard');
         renderOnboardStep();
+        trackEvent('onboarding_started');
       }
     }, 600);
   }, 2000);
@@ -2008,6 +2018,7 @@ function renderOnboardStep() {
       `;
       break;
   }
+  trackEvent('onboarding_step', { step: step });
 }
 
 function selectCheckType(v, el) {
@@ -2115,6 +2126,7 @@ function onboardFinish() {
     onboardingDate: new Date().toISOString(),
   };
   saveProfile();
+  trackEvent('onboarding_completed');
   showScreen('home');
 }
 
@@ -2319,6 +2331,7 @@ function startCheckFlow() {
 }
 
 function startCheck(type) {
+  trackEvent('check_started', { type: type });
   currentCheck = type;
   currentStep  = 0;
   renderStep();
@@ -2417,6 +2430,8 @@ function saveRecord() {
   };
   records.unshift(record);
   saveRecords();
+  trackEvent('check_completed', { type: currentCheck });
+  if (records.length === 1) trackEvent('first_check_completed');
   checkAndAwardBadges(record);
   renderResultScreen(record);
   showScreen('result');
@@ -2775,7 +2790,7 @@ function renderProfile() {
       </div>
     </div>
 
-    <div style="text-align:center;padding:8px 0;font-size:.75rem;color:var(--text-muted);">TBC Version 1.1 · All data stored on this device only.</div>
+    <div style="text-align:center;padding:8px 0;font-size:.75rem;color:var(--text-muted);">TBC Version 1.1 · Personal data stored on this device · anonymous usage analytics only.</div>
   `;
 }
 
@@ -2833,6 +2848,7 @@ function downloadCalendarReminder() {
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
   showToast('📅 Calendar file downloaded — open it to add the reminder.');
+  trackEvent('reminder_calendar_added');
 }
 
 async function toggleNotifications() {
@@ -2850,6 +2866,7 @@ async function toggleNotifications() {
     profile.notificationsEnabled = true;
     profile.notificationsLastPrompt = new Date().toISOString();
     saveProfile(); renderProfile();
+    trackEvent('reminder_notifications_enabled');
     const checks = (profile?.checksEnabled||['testis']).map(c=>c==='testis'?'Testicular':'Breast').join(' & ');
     const next   = getNextCheckDate();
     new Notification('TBC reminders are set \u2713', {
