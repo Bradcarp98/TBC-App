@@ -2330,7 +2330,17 @@ function startCheckFlow() {
   }
 }
 
+function preloadCheckImages(type) {
+  (STEPS[type] || []).forEach(step => {
+    const html = ILLUSTRATIONS[step.illus];
+    if (!html) return;
+    const match = /src=["']([^"']+\.(?:jpg|jpeg|png|webp))["']/i.exec(html);
+    if (match) { const img = new Image(); img.src = match[1]; }
+  });
+}
+
 function startCheck(type) {
+  preloadCheckImages(type);
   trackEvent('check_started', { type: type });
   currentCheck = type;
   currentStep  = 0;
